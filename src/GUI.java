@@ -1,8 +1,11 @@
 package src;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class GUI {
     private JFrame frame;
@@ -14,12 +17,20 @@ public class GUI {
     private JButton hitButton;
     private JButton standButton;
 
+    private JLabel background;
+
     private blackjack Blackjack;
 
     // constructor
     public GUI() {
         frame = new JFrame("Blackjack");
         panel = new JPanel();
+
+        // add contents of the GUI
+        ImageIcon backgroundImg = new ImageIcon("image/board/board.jpg");
+        background = new JLabel(backgroundImg);
+        background.setLayout(new BorderLayout());
+
         playerHandLabel = new JLabel("Player Hand: ");
         dealerHandLabel = new JLabel("Dealer Hand: ");
         playerScoreLabel = new JLabel("Player Score: ");
@@ -35,7 +46,13 @@ public class GUI {
                 printGameProgress();
                 if (Blackjack.isPlayerBust()) {
                     endGame();
-                    JOptionPane.showMessageDialog(frame, "Player Bust! Dealer Wins!");
+                    // JOptionPane.showMessageDialog(frame, "Player Bust! Dealer Wins!");
+                    int choice = JOptionPane.showConfirmDialog(frame, "Player Bust! Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        restartGame();
+                    } else {
+                        frame.dispose();
+                    }
                 }
             }
         });
@@ -48,20 +65,29 @@ public class GUI {
                 }
                 updateGUI();
                 printGameProgress();
+
+                int choice;
+
                 if (Blackjack.isDealerBust() || Blackjack.isPlayerWin()) {
                     endGame();
-                    JOptionPane.showMessageDialog(frame, "Player Wins!");
+                    choice = JOptionPane.showConfirmDialog(frame, "Player Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else if (Blackjack.isDealerWin()) {
                     endGame();
-                    JOptionPane.showMessageDialog(frame, "Dealer Wins!");
+                    choice = JOptionPane.showConfirmDialog(frame, "Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else {
                     endGame();
-                    JOptionPane.showMessageDialog(frame, "Draw!");
+                    choice = JOptionPane.showConfirmDialog(frame, "Draw! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
+                }
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    restartGame();
+                } else {
+                    frame.dispose();
                 }
             }
         });
 
-        panel.setLayout(new GridLayout(2, 2));
+        panel.setLayout(new GridLayout(3, 2));
         panel.add(playerHandLabel);
         panel.add(playerScoreLabel);
         panel.add(dealerHandLabel);
@@ -69,7 +95,11 @@ public class GUI {
         panel.add(hitButton);
         panel.add(standButton);
 
-        frame.add(panel);
+        background.add(panel, BorderLayout.CENTER);
+        frame.setContentPane(background);
+        
+        // frame.add(panel);
+        frame.setSize(600,800);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -102,6 +132,14 @@ public class GUI {
         System.out.println("Dealer Hand: " + Blackjack.getDealerHand());
         System.out.println("Dealer Score: " + Blackjack.getDealerScore());
         System.out.println();
+    }
+
+    private void restartGame() {
+        Blackjack = new blackjack();
+        Blackjack.dealInitialHands();
+        hitButton.setEnabled(true);
+        standButton.setEnabled(true);
+        updateGUI();
     }
 
 }

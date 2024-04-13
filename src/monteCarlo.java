@@ -1,9 +1,7 @@
 package src;
-// import java.util.HashMap;
-// import java.util.Map;
 
 public class monteCarlo {
-    private static final int NUM_SIMULATIONS = 100000;
+    private static final int NUM_SIMULATIONS = 1000;
 
     public static void runSimulation() {
         int playerWins = 0;
@@ -34,8 +32,19 @@ public class monteCarlo {
             }
         }
 
-        System.out.println("Player wins: " + playerWins);
-        System.out.println("Dealer wins: " + dealerWins);
-        System.out.println("Draws: " + draws);
+        double playerWinPercentage = (double) playerWins / NUM_SIMULATIONS * 100;
+        double dealerWinPercentage = (double) dealerWins / NUM_SIMULATIONS * 100;
+        double drawPercentage = (double) draws / NUM_SIMULATIONS * 100;
+
+        playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
+        dealerWinPercentage = Math.round(dealerWinPercentage * 10) / 10.0;
+        drawPercentage = Math.round(drawPercentage * 10) / 10.0;
+
+        System.out.println("=====================================");
+        System.out.println("    Monte-Carlo Algorithm Results:   \n");
+        System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
+        System.out.println("Dealer wins: " + dealerWins + " => " + dealerWinPercentage + "%");
+        System.out.println("Draws: " + draws + " => " + drawPercentage + "%");
+        System.out.println("=====================================\n");
     }
 }
