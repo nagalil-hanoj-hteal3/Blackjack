@@ -1,2 +1,3 @@
 # Blackjack
-Created by Neo, Ased, and I
+Algorithm Used: Monte Carlo
+Programming Language used: Java
