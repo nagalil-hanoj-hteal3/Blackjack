@@ -46,6 +46,8 @@ public class blackjack {
         }
     }
 
+    public boolean isPlayerHasBlackjack() { return playerHasBlackjack; }
+
     private Card drawCard() {
         Random rand = new Random();
         int index = rand.nextInt(deck.size());

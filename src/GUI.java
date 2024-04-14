@@ -152,15 +152,28 @@ public class GUI {
 
         Blackjack = new blackjack();
         Blackjack.dealInitialHands();
-        updateGUI();
-        printGameProgress();
+
+        // Check if the player has a blackjack
+        if (Blackjack.isPlayerHasBlackjack()) {
+            endGame();
+            updateResultLabel("Player wins with a Blackjack!");
+            choice = JOptionPane.showConfirmDialog(frame, "Player wins with a Blackjack! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                restartGame();
+            } else {
+                frame.dispose();
+            }
+        } else {
+            updateGUI();
+            printGameProgress();
+        }
 
         ImageIcon icon = new ImageIcon("image/bj.jpg");
         // JLabel label = new JLabel(icon);
         frame.setIconImage(icon.getImage());
     }
     
-    private void updateGUI() {
+    public void updateGUI() {
         // Clear previous card images
         panel.removeAll();
     
@@ -260,12 +273,12 @@ public class GUI {
         panel.add(cardLabel);
     }     
 
-    private void endGame() {
+    public void endGame() {
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
     }
 
-    private void printGameProgress() {
+    public void printGameProgress() {
         System.out.println("Player Hand: " + Blackjack.getPlayerHand());
         System.out.println("Player Score: " + Blackjack.getPlayerScore());
         System.out.println("Dealer Hand: " + Blackjack.getDealerHand());
