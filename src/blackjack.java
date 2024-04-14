@@ -10,6 +10,7 @@ public class blackjack {
     private List<Card> dealerHand;
     private int playerScore;
     private int dealerScore;
+    private boolean playerHasBlackjack;
 
     public blackjack() {
         initializeDeck();
@@ -17,6 +18,7 @@ public class blackjack {
         dealerHand = new ArrayList<>();
         playerScore = 0;
         dealerScore = 0;
+        playerHasBlackjack = false;
     }
 
     private void initializeDeck() {
@@ -29,12 +31,19 @@ public class blackjack {
     }
 
     public void dealInitialHands() {
+        playerHand.clear();
+        dealerHand.clear();
         for (int i = 0; i < 2; i++) {
             playerHand.add(drawCard());
             dealerHand.add(drawCard());
         }
         playerScore = calculateScore(playerHand);
         dealerScore = calculateScore(dealerHand);
+
+        // Check if player has a blackjack (ace + 10)
+        if (playerScore == 21 && playerHand.size() == 2) {
+            playerHasBlackjack = true;
+        }
     }
 
     private Card drawCard() {
@@ -107,6 +116,10 @@ public class blackjack {
 
     public int getDealerScore() {
         return dealerScore;
+    }
+
+    public boolean isGameOver() {
+        return (isPlayerBust() || isDealerBust() || isPlayerWin() || isDealerWin() || isGameDraw());
     }
 
 }
