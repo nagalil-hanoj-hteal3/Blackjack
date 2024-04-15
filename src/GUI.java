@@ -23,7 +23,7 @@ public class GUI {
 
     private int choice = JOptionPane.NO_OPTION;
 
-    private boolean gameOver = false;
+    private boolean playerHasStood = false;
 
     // constructor
     public GUI() {
@@ -31,7 +31,8 @@ public class GUI {
         frame.setLayout(new BorderLayout());
 
         // add contents of the GUI
-        ImageIcon backgroundImg = new ImageIcon("image/board/board.jpg");
+        // ImageIcon backgroundImg = new ImageIcon("image/board/board.jpg");
+        ImageIcon backgroundImg = new ImageIcon("image/board/csusm-theme.jpg");
         panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -83,6 +84,7 @@ public class GUI {
         standButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                playerHasStood = true;
                 while (!Blackjack.isDealerBust() && Blackjack.getDealerScore() < 17) {
                     Blackjack.dealerHit();
                 }
@@ -181,7 +183,7 @@ public class GUI {
         panel.setLayout(new BorderLayout());
     
         // Create a JPanel for the player's hand
-        JPanel playerHandPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 50, 0));
+        JPanel playerHandPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 50, 0));
         playerHandPanel.setOpaque(false);
     
         // Add player's hand images to the playerHandPanel
@@ -189,16 +191,16 @@ public class GUI {
             addCardImage(card, playerHandPanel);
         }
     
-        playerHandPanel.setBorder(BorderFactory.createEmptyBorder(70, 0, 0, 0));
+        playerHandPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
     
         // Add the playerHandPanel to the top of the main panel
         panel.add(playerHandPanel, BorderLayout.NORTH);
     
         // Create a JPanel for the dealer's hand
-        JPanel dealerHandPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 50, 0));
+        JPanel dealerHandPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 50, 0));
         dealerHandPanel.setOpaque(false);
     
-        dealerHandPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 70, 0));
+        dealerHandPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 200, 0));
     
         // Add dealer's hand images to the dealerHandPanel
         for (int i = 0; i < Blackjack.getDealerHand().size(); i++) {
@@ -207,7 +209,7 @@ public class GUI {
             JPanel cardPanel = new JPanel(new BorderLayout());
             cardPanel.setOpaque(false); // Make the panel transparent
     
-            if (gameOver || i != 0) {
+            if (playerHasStood || Blackjack.isDealerBust() || Blackjack.isPlayerBust() || i != 0) {
                 // Show actual card images for all cards when the game is over or for non-first cards
                 ImageIcon cardImage = new ImageIcon("image/cards/" + card.getRank().getName() + "-" + card.getSuit().getName() + ".png");
                 Image scaledCardImage = cardImage.getImage().getScaledInstance(120, 200, Image.SCALE_SMOOTH);
@@ -235,8 +237,8 @@ public class GUI {
             dealerHandPanel.add(cardPanel);
         }
     
-        // If game is not over, show "?" as the dealer's score
-        String dealerScoreText = Blackjack.isGameOver() ? Integer.toString(Blackjack.getDealerScore()) : "?";
+        // If game is not over, show "*" as the dealer's score
+        String dealerScoreText = (playerHasStood || Blackjack.isDealerBust() || Blackjack.isPlayerBust()) ? Integer.toString(Blackjack.getDealerScore()) : "*";
         dealerScoreLabel.setText("Dealer Score: " + dealerScoreText);
     
         // Add the dealerHandPanel to the bottom of the main panel
@@ -253,8 +255,22 @@ public class GUI {
         playerHandLabel.setText("Player Hand: " + Blackjack.getPlayerHand());
 
         // Update dealer hand label
-        dealerHandLabel.setText("Dealer Hand: " + Blackjack.getDealerHand());
-        // Reset the choice variable
+        String dealerHandText = "Dealer Hand: [";
+
+        // Add '*' for the first card if the game is ongoing and it's not revealed yet
+        if (!playerHasStood && !Blackjack.isDealerBust() && !Blackjack.isPlayerBust()) {
+            dealerHandText += "*";
+        } else {
+            dealerHandText += Blackjack.getDealerHand().get(0); // Add actual first card if revealed
+        }
+
+        // Add actual card values for the rest of the cards
+        for (int i = 1; i < Blackjack.getDealerHand().size(); i++) {
+            dealerHandText += ", " + Blackjack.getDealerHand().get(i);
+        }
+
+        dealerHandLabel.setText(dealerHandText + "]");
+ // Reset the choice variable
         choice = JOptionPane.NO_OPTION;
     }
     
@@ -291,6 +307,8 @@ public class GUI {
         Blackjack.dealInitialHands();
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
+        playerHasStood = false;
+        updateResultLabel(null);
         updateGUI();
     }
 
