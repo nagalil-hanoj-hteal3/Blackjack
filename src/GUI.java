@@ -40,6 +40,7 @@ public class GUI {
                 g.drawImage(backgroundImg.getImage(), 0, 0, getWidth(), getHeight(), null);
             }
         };
+        
         panel.setLayout(new BorderLayout());
 
         playerHandLabel = new JLabel("Player Hand: ");

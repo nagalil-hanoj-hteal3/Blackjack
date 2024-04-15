@@ -1,7 +1,7 @@
 package src;
 
 public class monteCarlo {
-    private static final int NUM_SIMULATIONS = 1000;
+    private static final int NUM_SIMULATIONS = 10;
 
     public static void runSimulation() {
         int playerWins = 0;
@@ -14,37 +14,45 @@ public class monteCarlo {
 
             while (!Blackjack.isPlayerBust()) {
                 if (Blackjack.getPlayerScore() >= 17) {
+                    // System.out.println("Player Score at " + Blackjack.getPlayerScore());
                     break;
                 }
                 Blackjack.playerHit();
             }
 
             while (!Blackjack.isDealerBust() && Blackjack.getDealerScore() < 17) {
+                // System.out.println("Dealer Score at " + Blackjack.getDealerScore());
                 Blackjack.dealerHit();
             }
 
             if (Blackjack.isPlayerWin()) {
                 playerWins++;
+                // System.out.println("Player wins");
             } else if (Blackjack.isDealerWin()) {
                 dealerWins++;
+                // System.out.println("Dealer Wins");
             } else {
                 draws++;
+                // System.out.println("No one wins");
             }
+
+            double playerWinPercentage = (double) playerWins / NUM_SIMULATIONS * 100;
+            double dealerWinPercentage = (double) dealerWins / NUM_SIMULATIONS * 100;
+            double drawPercentage = (double) draws / NUM_SIMULATIONS * 100;
+
+            playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
+            dealerWinPercentage = Math.round(dealerWinPercentage * 10) / 10.0;
+            drawPercentage = Math.round(drawPercentage * 10) / 10.0;
+
+            System.out.println("=====================================");
+            System.out.println("    Monte-Carlo Algorithm Results:   \n");
+            System.out.println("Game #" + i+1);
+            System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
+            System.out.println("Dealer wins: " + dealerWins + " => " + dealerWinPercentage + "%");
+            System.out.println("Draws: " + draws + " => " + drawPercentage + "%");
+            
         }
-
-        double playerWinPercentage = (double) playerWins / NUM_SIMULATIONS * 100;
-        double dealerWinPercentage = (double) dealerWins / NUM_SIMULATIONS * 100;
-        double drawPercentage = (double) draws / NUM_SIMULATIONS * 100;
-
-        playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
-        dealerWinPercentage = Math.round(dealerWinPercentage * 10) / 10.0;
-        drawPercentage = Math.round(drawPercentage * 10) / 10.0;
-
-        System.out.println("=====================================");
-        System.out.println("    Monte-Carlo Algorithm Results:   \n");
-        System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
-        System.out.println("Dealer wins: " + dealerWins + " => " + dealerWinPercentage + "%");
-        System.out.println("Draws: " + draws + " => " + drawPercentage + "%");
         System.out.println("=====================================\n");
+        
     }
 }

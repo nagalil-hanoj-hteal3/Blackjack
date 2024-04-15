@@ -84,41 +84,23 @@ public class blackjack {
         dealerScore = calculateScore(dealerHand);
     }
 
-    public boolean isPlayerBust() {
-        return playerScore > 21;
-    }
+    public boolean isPlayerBust() { return playerScore > 21; }
 
-    public boolean isDealerBust() {
-        return dealerScore > 21;
-    }
+    public boolean isDealerBust() { return dealerScore > 21; }
 
-    public boolean isPlayerWin() {
-        return !isPlayerBust() && (playerScore > dealerScore || isDealerBust());
-    }
+    public boolean isPlayerWin() { return !isPlayerBust() && (playerScore > dealerScore || isDealerBust()); }
 
-    public boolean isDealerWin() {
-        return !isDealerBust() && (dealerScore > playerScore || isPlayerBust());
-    }
+    public boolean isDealerWin() { return !isDealerBust() && (dealerScore > playerScore || isPlayerBust()); }
 
-    public boolean isGameDraw() {
-        return playerScore == dealerScore;
-    }
+    public boolean isGameDraw() { return playerScore == dealerScore; }
 
-    public List<Card> getPlayerHand() {
-        return playerHand;
-    }
+    public List<Card> getPlayerHand() { return playerHand; }
 
-    public List<Card> getDealerHand() {
-        return dealerHand;
-    }
+    public List<Card> getDealerHand() { return dealerHand; }
 
-    public int getPlayerScore() {
-        return playerScore;
-    }
+    public int getPlayerScore() { return playerScore; }
 
-    public int getDealerScore() {
-        return dealerScore;
-    }
+    public int getDealerScore() { return dealerScore; }
 
     public boolean isGameOver() {
         return (isPlayerBust() || isDealerBust() || isPlayerWin() || isDealerWin() || isGameDraw());
