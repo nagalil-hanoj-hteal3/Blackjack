@@ -10,11 +10,11 @@ public class monteCarlo {
     private static final int NUM_SIMULATIONS = 1000;
 
     static class EpisodeStep {
-        int[] state;
+        int state;
         int action;
         double reward;
 
-        public EpisodeStep(int[] state, int action, double reward) {
+        public EpisodeStep(int state, int action, double reward) {
             this.state = state;
             this.action = action;
             this.reward = reward;
@@ -22,25 +22,31 @@ public class monteCarlo {
     }
 
     public static void runSimulation() {
+        List<EpisodeStep> episode = new ArrayList<>();
         // value for policy 
         double policyProb = 0.8;
-
-        
-
         int playerWins = 0;
         // int dealerWins = 0;
         int draws = 0;
+
+        Random r = new Random();
 
         for (int i = 0; i < NUM_SIMULATIONS; i++) {
             blackjack Blackjack = new blackjack();
             Blackjack.dealInitialHands();
 
             while (!Blackjack.isPlayerBust()) {
-                Random r = new Random();
                 double randNum = r.nextDouble();
                 randNum = Math.round(randNum * 10.0) / 10.0;
 
-                if ((Blackjack.getPlayerScore() >= 17) && (randNum < policyProb)) {
+                int state = Blackjack.getPlayerScore();
+                //stand (0) 80% chance when score 17 or more, else hit (1)
+                int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < policyProb))? 0 : 1;
+
+                EpisodeStep step = new EpisodeStep(state, action, 0);
+                episode.add(step);
+
+                if (action == 0) {
                     // System.out.println("Player Score at " + Blackjack.getPlayerScore());
                     break;
                 }
