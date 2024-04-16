@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class monteCarlo {
-    private static final int NUM_SIMULATIONS = 1000;
+    private static final int NUM_SIMULATIONS = 10;
 
     static class EpisodeStep {
         int state;
@@ -31,6 +31,10 @@ public class monteCarlo {
 
         Random r = new Random();
 
+        Map<List<Integer>, double[]> returns_sum = new HashMap<>();
+        Map<List<Integer>, Double> N = new HashMap<>();
+        Map<List<Integer>, double[]> Q = new HashMap<>();
+
         for (int i = 0; i < NUM_SIMULATIONS; i++) {
             blackjack Blackjack = new blackjack();
             Blackjack.dealInitialHands();
@@ -43,8 +47,22 @@ public class monteCarlo {
                 //stand (0) 80% chance when score 17 or more, else hit (1)
                 int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < policyProb))? 0 : 1;
 
-                EpisodeStep step = new EpisodeStep(state, action, 0);
+                int reward = 0;
+
+                if (Blackjack.isPlayerWin()) {
+                    // playerWins++;
+                    // reward = playerWins;
+                    reward = 1;
+                } else if (!Blackjack.isGameDraw()) { //lost
+                    // playerWins += 0;
+                    // reward = playerWins;
+                    reward = -1;
+                }
+
+                EpisodeStep step = new EpisodeStep(state, action, reward);
                 episode.add(step);
+                System.out.println("Action: " + step.action + ". State: " + step.state + ". Reward: " + step.reward);
+                // System.out.println("Action: " + action + ". State: " + state + ".");
 
                 if (action == 0) {
                     // System.out.println("Player Score at " + Blackjack.getPlayerScore());
@@ -69,7 +87,6 @@ public class monteCarlo {
                 draws++;
                 // System.out.println("No one wins");
             }
-
             double playerWinPercentage = (double) playerWins / NUM_SIMULATIONS * 100;
             // double dealerWinPercentage = (double) dealerWins / NUM_SIMULATIONS * 100;
             double drawPercentage = (double) draws / NUM_SIMULATIONS * 100;
@@ -78,15 +95,27 @@ public class monteCarlo {
             // dealerWinPercentage = Math.round(dealerWinPercentage * 10) / 10.0;
             drawPercentage = Math.round(drawPercentage * 10) / 10.0;
 
-            System.out.println("=====================================");
+            System.out.println("=====================================\n");
             System.out.println("    Monte-Carlo Algorithm Results:   \n");
             System.out.println("Game #" + (i + 1));
             System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
             // System.out.println("Dealer wins: " + dealerWins + " => " + dealerWinPercentage + "%");
             System.out.println("Draws: " + draws + " => " + drawPercentage + "%");
             
+            
         }
-        System.out.println("=====================================\n");
+        System.out.println("\n=====================================\n");
         
+    }
+
+    // 
+    private static void update_Q(List<EpisodeStep> episode, Map<List<Integer>, double[]> Q, Map<List<Integer>, Double> returns_sum, Map<List<Integer>, Double> N) {
+        double gamma = 1.0;
+
+        for (EpisodeStep step : episode) {
+            double G = 0;
+            int firstOccurrenceIdx = episode.indexOf(step);
+            
+        }
     }
 }

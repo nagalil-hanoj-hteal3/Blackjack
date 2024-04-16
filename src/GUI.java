@@ -213,16 +213,16 @@ public class GUI {
             if (playerHasStood || Blackjack.isDealerBust() || Blackjack.isPlayerBust() || i != 0) {
                 // Show actual card images for all cards when the game is over or for non-first cards
                 ImageIcon cardImage = new ImageIcon("image/cards/" + card.getRank().getName() + "-" + card.getSuit().getName() + ".png");
-                Image scaledCardImage = cardImage.getImage().getScaledInstance(120, 200, Image.SCALE_SMOOTH);
+                Image scaledCardImage = cardImage.getImage().getScaledInstance(135, 200, Image.SCALE_SMOOTH);
                 ImageIcon scaledCardIcon = new ImageIcon(scaledCardImage);
                 JLabel cardLabel = new JLabel(scaledCardIcon);
                 cardPanel.add(cardLabel, BorderLayout.CENTER);
             } else {
                 // Show back of the card for the first card when the game is ongoing
-                ImageIcon backCardImage = new ImageIcon("image/backCard.png");
+                ImageIcon backCardImage = new ImageIcon("image/backCardCSUSM.png");
         
                 // Get the dimensions of the card image
-                int width = 120;
+                int width = 135;
                 int height = 200;
         
                 // Scale the back card image
@@ -280,7 +280,7 @@ public class GUI {
         ImageIcon originalCardImage = new ImageIcon("image/cards/" + imageName);
         
         // Scale the original image to the desired size
-        Image scaledImage = originalCardImage.getImage().getScaledInstance(120, 200, Image.SCALE_SMOOTH);
+        Image scaledImage = originalCardImage.getImage().getScaledInstance(135, 200, Image.SCALE_SMOOTH);
         ImageIcon scaledCardImage = new ImageIcon(scaledImage);
         
         // Create a JLabel with the scaled card image
