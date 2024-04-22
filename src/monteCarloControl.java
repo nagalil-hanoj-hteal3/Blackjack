@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class monteCarlo {
+public class monteCarloControl {
     private static final int NUM_SIMULATIONS = 500;
 
     private static final double initialEpsilon = 1.0;
@@ -52,13 +52,17 @@ public class monteCarlo {
 
             // this while loop determines the exploration and exploitation
             while (!Blackjack.isPlayerBust()) {
-                double randNum = rand.nextDouble();
-                randNum = Math.round(randNum * 10.0) / 10.0;
-
                 int state = Blackjack.getPlayerScore();
+                int action;
 
-                //basic policy: if under 17 then hit, if 17 or over then 20% chance to hit and 80% chance to stand
-                int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < 0.8))? 1 : 0;
+                // Epsilon-greedy action selection
+                if (rand.nextDouble() < epsilon) {
+                    // Exploration: Choose a random action
+                    action = rand.nextInt(2); // Assuming there are 2 actions (hit or stand)
+                } else {
+                    // Exploitation: Choose the action with the highest estimated value
+                    action = getBestAction(Q, state);
+                }
 
                 int reward = determineReward(Blackjack);
 
