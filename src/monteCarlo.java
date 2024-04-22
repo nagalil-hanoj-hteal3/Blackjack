@@ -54,20 +54,13 @@ public class monteCarlo {
 
             // this while loop determines the exploration and exploitation
             while (!Blackjack.isPlayerBust()) {
-                // randNum = Math.round(randNum * 10.0) / 10.0;
+                double randNum = rand.nextDouble();
+                randNum = Math.round(randNum * 10.0) / 10.0;
 
                 int state = Blackjack.getPlayerScore();
-                // int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < policyProb))? 0 : 1;
-                int action;
 
-                // Epsilon-greedy action selection
-                if (rand.nextDouble() < epsilon) {
-                    // Exploration: Choose a random action
-                    action = rand.nextInt(2); // Assuming there are 2 actions (hit or stand)
-                } else {
-                    // Exploitation: Choose the action with the highest estimated value
-                    action = getBestAction(Q, state);
-                }
+                //basic policy: if under 17 then hit, if 17 or over then 20% chance to hit and 80% chance to stand
+                int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < 0.8))? 1 : 0;
 
                 int reward = determineReward(Blackjack);
 
@@ -127,15 +120,10 @@ public class monteCarlo {
     // Method to determine the best action based on Q-values
     private static int getBestAction(Map<List<Integer>, double[]> Q, int state) {
         if (Q.containsKey(Arrays.asList(state, 0)) && Q.containsKey(Arrays.asList(state, 1))) {
-            // Check if the state is 17 or higher, then stand
-            if (state >= 17) { return 0; /* Stand*/ } 
-            else {
-                // Otherwise, check the Q-values to decide whether to hit or stand
-                if (Q.get(Arrays.asList(state, 0))[0] > Q.get(Arrays.asList(state, 1))[0]) {
-                    return 0; // Stand
-                } else {
-                    return 1; // Hit
-                }
+            if ((Q.get(Arrays.asList(state, 0))[0] > Q.get(Arrays.asList(state, 1))[0]) || state >= 17) {
+                return 0; // Hit
+            } else {
+                return 1; // Stand
             }
         } else {
             // If no Q-values are available, choose randomly
