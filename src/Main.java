@@ -8,7 +8,7 @@ public class Main {
         monteCarlo.runSimulation();
 
         // Show JOptionPane before initializing GUI
-        JOptionPane.showMessageDialog(null, "Welcome to Blackjack! Press OK to start the game.");
+        int option = JOptionPane.showConfirmDialog(null, "Welcome to Blackjack!", "Welcome", JOptionPane.OK_CANCEL_OPTION);
 
         // plan to use the GUI class for calling the monteCarlo.runSimulation() 
         // for displaying a live gameplay of the model playing blackjack
@@ -16,10 +16,13 @@ public class Main {
         // have another option for allowing the user to play the game
         
         // Initialize GUI after closing JOptionPane
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                GUI gui = new GUI();
-            }
-        });
+        if (option == JOptionPane.OK_OPTION) {
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    @SuppressWarnings("unused")
+                    GUI gui = new GUI();
+                }
+            });
+        }
     }
 }

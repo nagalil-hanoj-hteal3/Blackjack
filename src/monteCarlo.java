@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+// Reference: https://towardsdatascience.com/learning-to-win-blackjack-with-monte-carlo-methods-61c90a52d53e
+
 public class monteCarlo {
-    private static final int NUM_SIMULATIONS = 500;
+    private static final int NUM_SIMULATIONS = 10000;
 
     private static final double initialEpsilon = 1.0;
     private static final double minEpsilon = 0.01;
@@ -72,9 +74,7 @@ public class monteCarlo {
                 EpisodeStep step = new EpisodeStep(state, action, reward);
                 episode.add(step);
 
-                if (action == 0) {
-                    break;
-                }
+                if (action == 0) { break; }
 
                 Blackjack.playerHit();
             }
@@ -85,6 +85,7 @@ public class monteCarlo {
             updateStatistics(Blackjack, stats, i);
         }
 
+        // stats[0] = player win, stats[1] = draw, stats[2] = player loss
         printFinalResults(stats[0], stats[1], stats[2]);
 
         System.out.println("\n=====================================\n");
@@ -125,55 +126,48 @@ public class monteCarlo {
 
     // Method to determine the best action based on Q-values
     private static int getBestAction(Map<List<Integer>, double[]> Q, int state) {
-        // Assuming there are only two actions (hit or stand)
         if (Q.containsKey(Arrays.asList(state, 0)) && Q.containsKey(Arrays.asList(state, 1))) {
-            if ((Q.get(Arrays.asList(state, 0))[0] > Q.get(Arrays.asList(state, 1))[0]) || state >= 17) {
-                return 0; // Hit
-            } else {
-                return 1; // Stand
+            // Check if the state is 17 or higher, then stand
+            if (state >= 17) { return 0; /* Stand*/ } 
+            else {
+                // Otherwise, check the Q-values to decide whether to hit or stand
+                if (Q.get(Arrays.asList(state, 0))[0] > Q.get(Arrays.asList(state, 1))[0]) {
+                    return 0; // Stand
+                } else {
+                    return 1; // Hit
+                }
             }
-        } 
-        else {
+        } else {
             // If no Q-values are available, choose randomly
             return new Random().nextInt(2);
         }
-    }
+    }    
 
     // Method to determine the reward for the current state
-    private static int determineReward(blackjack Blackjack) {
-        if (Blackjack.isPlayerWin()) {
-            return 1;
-        } 
-        // else if (Blackjack.isGameDraw()) {
-        //     return 0;
-        // }
-        return -1; 
-    }
+    private static int determineReward(blackjack Blackjack) { if (Blackjack.isPlayerWin()) { return 1; } return -1; }
 
     // Method to update win/loss statistics
     private static void updateStatistics(blackjack Blackjack, int stats[], int i) {
-        if (Blackjack.isPlayerWin()) {
-            stats[0]++;
-        } else if (Blackjack.isGameDraw()){
-            stats[1]++;
-        } else if(Blackjack.isDealerWin()) {
-            stats[2]++;
-        }
+        if (Blackjack.isPlayerWin()) { stats[0]++; } 
+        else if (Blackjack.isGameDraw()){ stats[1]++; } 
+        else if(Blackjack.isDealerWin()) { stats[2]++; }
 
-        double playerWinPercentage = (double) stats[0] / NUM_SIMULATIONS * 100;
-        double drawPercentage = (double) stats[1] / NUM_SIMULATIONS * 100;
-        double playerLosePercentage = (double) stats[2] / NUM_SIMULATIONS * 100;
+        // provide this to display all the games within each iteration of the simulation
 
-        playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
-        drawPercentage = Math.round(drawPercentage * 10) / 10.0;
-        playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
+        // double playerWinPercentage = (double) stats[0] / NUM_SIMULATIONS * 100;
+        // double drawPercentage = (double) stats[1] / NUM_SIMULATIONS * 100;
+        // double playerLosePercentage = (double) stats[2] / NUM_SIMULATIONS * 100;
 
-        System.out.println("\n=====================================\n");
-        System.out.println("    Monte-Carlo Algorithm Results:   \n");
-        System.out.println("Game #" + (i + 1));
-        System.out.println("Player wins: " + stats[0] + " => " + playerWinPercentage + "%");
-        System.out.println("Player losses: " + stats[1] + " => " + playerLosePercentage + "%");
-        System.out.println("Draws: " + stats[2] + " => " + drawPercentage + "%");
+        // playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
+        // drawPercentage = Math.round(drawPercentage * 10) / 10.0;
+        // playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
+
+        // System.out.println("\n=====================================\n");
+        // System.out.println("    Monte-Carlo Algorithm Results:   \n");
+        // System.out.println("Game #" + (i + 1));
+        // System.out.println("Player wins: " + stats[0] + " => " + playerWinPercentage + "%");
+        // System.out.println("Player losses: " + stats[2] + " => " + playerLosePercentage + "%");
+        // System.out.println("Draws: " + stats[1] + " => " + drawPercentage + "%");
     }
 
     private static void printFinalResults(int playerWins, int playerDraws, int playerLosses) {
@@ -193,106 +187,3 @@ public class monteCarlo {
     }    
     
 }
-
-// package src;
-
-// import java.util.ArrayList;
-// import java.util.Arrays;
-// import java.util.HashMap;
-// import java.util.List;
-// import java.util.Map;
-// import java.util.Random;
-
-// public class monteCarlo {
-//     // private static final int NUM_SIMULATIONS = 10;
-
-//     static class EpisodeStep {
-//         int state;
-//         int action;
-//         double reward;
-
-//         public EpisodeStep(int state, int action, double reward) {
-//             this.state = state;
-//             this.action = action;
-//             this.reward = reward;
-//         }
-//     }
-
-//     public static void runSimulation() {
-//         double initialEpsilon = 1.0;
-//         double minEpsilon = 0.01;
-//         double alpha = 0.001;
-//         double gamma = 1.0;
-//         int num_episodes = 500000;
-
-//         Random r = new Random();
-//         blackjack Blackjack = new blackjack();
-
-//         Map<List<Integer>, double[]> Q = new HashMap<>();
-
-//         for (int i = 0; i < num_episodes; i++) {
-//             double epsilon = Math.max(initialEpsilon * Math.pow(0.9999, i), minEpsilon);
-
-//             Blackjack.dealInitialHands();
-//             List<EpisodeStep> episode = play_game(Blackjack, Q, epsilon, 2, r);
-//             update_Q(episode, Q, alpha, gamma);
-//         }
-//     }
-
-//     private static void update_Q(List<EpisodeStep> episode, Map<List<Integer>, double[]> Q, double alpha, double gamma) {
-//         for (int i = 0; i < episode.size(); i++) {
-//             EpisodeStep step = episode.get(i);
-//             List<Integer> stateActionPair = Arrays.asList(step.state, step.action);
-
-//             double G = 0;
-//             for (int j = i; j < episode.size(); j++) {
-//                 G += Math.pow(gamma, j - i) * episode.get(j).reward;
-//             }
-
-//             if (!Q.containsKey(stateActionPair)) {
-//                 Q.put(stateActionPair, new double[]{0.0, 0.0});
-//             }
-//             double[] qValues = Q.get(stateActionPair);
-//             qValues[0] = qValues[0] + alpha * (G - qValues[0]);
-//             Q.put(stateActionPair, qValues);
-//         }
-//     }
-
-//     private static double[] get_probs(Map<List<Integer>, double[]> Q, int state, double epsilon, int nA) {
-//         double[] policy_s = new double[nA];
-//         Arrays.fill(policy_s, epsilon / nA);
-//         if (Q.containsKey(Arrays.asList(state, 0))) {
-//             double[] qValues = Q.get(Arrays.asList(state, 0));
-//             int bestAction = (qValues[0] > qValues[1]) ? 0 : 1;
-//             policy_s[bestAction] = 1 - epsilon + (epsilon / nA);
-//         }
-//         return policy_s;
-//     }
-
-//     private static List<EpisodeStep> play_game(blackjack Blackjack, Map<List<Integer>, double[]> Q, double epsilon, int nA, Random r) {
-//         List<EpisodeStep> episode = new ArrayList<>();
-//         // Deal initial hands for both player and dealer
-//         Blackjack.dealInitialHands();
-        
-//         // Continue playing until the player busts or decides to stand
-//         while (!Blackjack.isPlayerBust()) {
-//             double[] probs = get_probs(Q, Blackjack.getPlayerScore(), epsilon, nA);
-//             int action = (r.nextDouble() < probs[0]) ? 0 : 1;
-//             int reward = (action == 0) ? (Blackjack.isPlayerWin() ? 1 : -1) : 0;
-//             EpisodeStep step = new EpisodeStep(Blackjack.getPlayerScore(), action, reward);
-//             episode.add(step);
-//             if (action == 0) {
-//                 break;
-//             }
-//             Blackjack.playerHit();
-//         }
-    
-//         // Dealer's turn
-//         while (!Blackjack.isGameOver() && Blackjack.getDealerScore() < 17) {
-//             Blackjack.dealerHit();
-//         }
-    
-//         return episode;
-//     }
-    
-// }

@@ -18,12 +18,14 @@ public class GUI {
 
     private JButton hitButton;
     private JButton standButton;
+    private JButton simButton;
 
     private blackjack Blackjack;
 
     private int choice = JOptionPane.NO_OPTION;
 
     private boolean playerHasStood = false;
+    private boolean isSimulating = false;
 
     // constructor
     public GUI() {
@@ -51,6 +53,7 @@ public class GUI {
 
         hitButton = new JButton("Hit");
         standButton = new JButton("Stand");
+        simButton = new JButton("Simulate");
 
         hitButton.addActionListener(new ActionListener() {
             @Override
@@ -125,6 +128,59 @@ public class GUI {
             }
         });
 
+        simButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Create a new thread for simulating and updating GUI
+
+                isSimulating = true;
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Run Monte Carlo simulation
+                        // monteCarlo.runSimulation();
+                        
+                        // Keep updating GUI until player busts or decides to stand
+                        while (!Blackjack.isPlayerBust() && isSimulating) {
+                            // Pause for a short duration to simulate card reveal
+                            try {
+                                Thread.sleep(1000); // Adjust the delay time as needed
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+        
+                            // Decide whether to hit or stand using Monte Carlo algorithm
+                            if (Blackjack.getPlayerScore() >= 17 && isSimulating) {
+                                // Stand if player's score is 17 or higher
+                                standButton.doClick();
+                            } else {
+                                // Hit if player's score is less than 17
+                                Blackjack.playerHit();
+                                updateGUI();
+                                printGameProgress();
+                            }
+        
+                            // Check if player has busted
+                            if (Blackjack.isPlayerBust()) {
+                                endGame();
+                                updateResultLabel("Player Bust! Dealer Wins!");
+        
+                                // Display option to restart game
+                                int choice = JOptionPane.showConfirmDialog(frame, "Player Bust! Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
+                                if (choice == JOptionPane.YES_OPTION) {
+                                    restartGame();
+                                } else {
+                                    frame.dispose();
+                                }
+                                return; // Exit the thread if the game is over
+                            }
+                        }
+                    }
+                }).start();
+            }
+        });                      
+
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
 
@@ -141,6 +197,7 @@ public class GUI {
         // buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(hitButton);
         buttonPanel.add(standButton);
+        buttonPanel.add(simButton);
 
         frame.add(labelsPanel, BorderLayout.NORTH);
         frame.add(panel, BorderLayout.CENTER);
@@ -310,6 +367,7 @@ public class GUI {
         standButton.setEnabled(true);
         playerHasStood = false;
         updateResultLabel(null);
+        isSimulating = false;
         updateGUI();
     }
 

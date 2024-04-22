@@ -102,8 +102,7 @@ public class blackjack {
 
     public int getDealerScore() { return dealerScore; }
 
-    public boolean isGameOver() {
-        return (isPlayerBust() || isDealerBust() || isPlayerWin() || isDealerWin() || isGameDraw());
-    }
-
+    // public boolean isGameOver() {
+    //     return (isPlayerBust() || isDealerBust() || isPlayerWin() || isDealerWin() || isGameDraw());
+    // }
 }
