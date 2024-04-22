@@ -9,7 +9,7 @@ import java.util.Random;
 
 // Reference: https://towardsdatascience.com/learning-to-win-blackjack-with-monte-carlo-methods-61c90a52d53e
 
-public class monteCarlo {
+public class monteCarloPredict {
     private static final int NUM_SIMULATIONS = 10000;
 
     private static final double initialEpsilon = 1.0;
@@ -17,6 +17,8 @@ public class monteCarlo {
     private static final double alpha = 0.001;
     private static final double gamma = 1.0;
     private static final double decay = 0.99;
+
+    public static Map<List<Integer>, double[]> Q;
 
     // Used to represent a single step in an episode
     static class EpisodeStep {
@@ -32,7 +34,7 @@ public class monteCarlo {
     }
 
     // Used to run the Monte Carlo algorithm
-    public static void runSimulation() {
+    public static Map<List<Integer>, double[]> runSimulation() {
         double epsilon = initialEpsilon;
         int[] stats = new int[3];
 
@@ -60,6 +62,7 @@ public class monteCarlo {
                 int state = Blackjack.getPlayerScore();
 
                 //basic policy: if under 17 then hit, if 17 or over then 20% chance to hit and 80% chance to stand
+                //0 = hit, 1 = stand
                 int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < 0.8))? 1 : 0;
 
                 int reward = determineReward(Blackjack);
@@ -82,6 +85,8 @@ public class monteCarlo {
         printFinalResults(stats[0], stats[1], stats[2]);
 
         System.out.println("\n=====================================\n");
+
+        return Q;
     }
 
     private static void update_Q(List<EpisodeStep> episode, Map<List<Integer>, double[]> Q, Map<List<Integer>, double[]> returns_sum, Map<List<Integer>, Double> N, double alpha, double epsilon) {
@@ -112,7 +117,8 @@ public class monteCarlo {
                 Q.put(stateActionPair, new double[]{0.0});
             }
             double[] qValues = Q.get(stateActionPair);
-            qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
+            qValues[0] += returns_sum.get(stateActionPair)[0] / N.get(stateActionPair);
+            //qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
             Q.put(stateActionPair, qValues);
         }
     }

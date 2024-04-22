@@ -8,13 +8,15 @@ import java.util.Map;
 import java.util.Random;
 
 public class monteCarloControl {
-    private static final int NUM_SIMULATIONS = 500;
-
     private static final double initialEpsilon = 1.0;
     private static final double minEpsilon = 0.01;
     private static final double alpha = 0.001;
     private static final double gamma = 1.0;
     private static final double decay = 0.99;
+
+    //private static Map<List<Integer>, double[]> returns_sum = new HashMap<>();
+    //Map<List<Integer>, Double> N = new HashMap<>();
+    public static Map<List<Integer>, double[]> Q = new HashMap<>();
 
     // Used to represent a single step in an episode
     static class EpisodeStep {
@@ -30,21 +32,19 @@ public class monteCarloControl {
     }
 
     // Used to run the Monte Carlo algorithm
-    public static void runSimulation() {
+    public static void simulate() {
         double epsilon = initialEpsilon;
-        int[] stats = new int[3];
+        // int[] stats = new int[3];
 
         // for randomizing their exploration/exploitation
         Random rand = new Random();
 
-        Map<List<Integer>, double[]> returns_sum = new HashMap<>();
-        Map<List<Integer>, Double> N = new HashMap<>();
-        Map<List<Integer>, double[]> Q = new HashMap<>();
+        
 
-        for (int i = 0; i < NUM_SIMULATIONS; i++) {
+        // for (int i = 0; i < NUM_SIMULATIONS; i++) {
             // this is the exploration rate
             // epsilon = Math.max(initialEpsilon * decay, minEpsilon);
-            epsilon = Math.max(initialEpsilon * Math.pow(decay, i), minEpsilon);
+            epsilon = Math.max(initialEpsilon * decay, minEpsilon);
 
             List<EpisodeStep> episode = new ArrayList<>();
             blackjack Blackjack = new blackjack();
@@ -77,17 +77,17 @@ public class monteCarloControl {
             }
 
             // Update Q-values after all simulations
-            update_Q(episode, Q, returns_sum, N, alpha, epsilon);
+            update_Q(episode, Q, alpha, epsilon);
 
-            updateStatistics(Blackjack, stats, i);
-        }
+            // updateStatistics(Blackjack, stats, i);
+        // }
 
-        printFinalResults(stats[0], stats[1], stats[2]);
+        // printFinalResults(stats[0], stats[1], stats[2]);
 
         System.out.println("\n=====================================\n");
     }
 
-    private static void update_Q(List<EpisodeStep> episode, Map<List<Integer>, double[]> Q, Map<List<Integer>, double[]> returns_sum, Map<List<Integer>, Double> N, double alpha, double epsilon) {
+    private static void update_Q(List<EpisodeStep> episode, Map<List<Integer>, double[]> Q, double alpha, double epsilon) {
         for (int i = 0; i < episode.size(); i++) {
             EpisodeStep step = episode.get(i);
             List<Integer> stateActionPair = new ArrayList<>();
@@ -100,15 +100,10 @@ public class monteCarloControl {
             }
     
             // Update returns_sum and N
-            if (!returns_sum.containsKey(stateActionPair)) {
-                returns_sum.put(stateActionPair, new double[]{0.0});
-            }
-            returns_sum.get(stateActionPair)[0] += G;
-    
-            if (!N.containsKey(stateActionPair)) {
-                N.put(stateActionPair, 0.0);
-            }
-            N.put(stateActionPair, N.get(stateActionPair) + 1);
+            // if (!returns_sum.containsKey(stateActionPair)) {
+            //     returns_sum.put(stateActionPair, new double[]{0.0});
+            // }
+            // returns_sum.get(stateActionPair)[0] += G;
     
             // Update Q-value with alpha
             if (!Q.containsKey(stateActionPair)) {
@@ -148,46 +143,46 @@ public class monteCarloControl {
     }
 
     // Method to update win/loss statistics
-    private static void updateStatistics(blackjack Blackjack, int stats[], int i) {
-        if (Blackjack.isPlayerWin()) {
-            stats[0]++;
-        } else if (Blackjack.isGameDraw()){
-            stats[1]++;
-        } else if(Blackjack.isDealerWin()) {
-            stats[2]++;
-        }
+    // private static void updateStatistics(blackjack Blackjack, int stats[], int i) {
+    //     if (Blackjack.isPlayerWin()) {
+    //         stats[0]++;
+    //     } else if (Blackjack.isGameDraw()){
+    //         stats[1]++;
+    //     } else if(Blackjack.isDealerWin()) {
+    //         stats[2]++;
+    //     }
 
-        double playerWinPercentage = (double) stats[0] / NUM_SIMULATIONS * 100;
-        double drawPercentage = (double) stats[1] / NUM_SIMULATIONS * 100;
-        double playerLosePercentage = (double) stats[2] / NUM_SIMULATIONS * 100;
+    //     // double playerWinPercentage = (double) stats[0] / NUM_SIMULATIONS * 100;
+    //     // double drawPercentage = (double) stats[1] / NUM_SIMULATIONS * 100;
+    //     // double playerLosePercentage = (double) stats[2] / NUM_SIMULATIONS * 100;
 
-        playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
-        drawPercentage = Math.round(drawPercentage * 10) / 10.0;
-        playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
+    //     playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
+    //     drawPercentage = Math.round(drawPercentage * 10) / 10.0;
+    //     playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
 
-        System.out.println("\n=====================================\n");
-        System.out.println("    Monte-Carlo Algorithm Results:   \n");
-        System.out.println("Game #" + (i + 1));
-        System.out.println("Player wins: " + stats[0] + " => " + playerWinPercentage + "%");
-        System.out.println("Player losses: " + stats[1] + " => " + playerLosePercentage + "%");
-        System.out.println("Draws: " + stats[2] + " => " + drawPercentage + "%");
-    }
+    //     System.out.println("\n=====================================\n");
+    //     System.out.println("    Monte-Carlo Algorithm Results:   \n");
+    //     System.out.println("Game #" + (i + 1));
+    //     System.out.println("Player wins: " + stats[0] + " => " + playerWinPercentage + "%");
+    //     System.out.println("Player losses: " + stats[1] + " => " + playerLosePercentage + "%");
+    //     System.out.println("Draws: " + stats[2] + " => " + drawPercentage + "%");
+    // }
 
-    private static void printFinalResults(int playerWins, int playerDraws, int playerLosses) {
-        double playerWinPercentage = (double) playerWins / NUM_SIMULATIONS * 100;
-        double drawPercentage = (double) playerDraws / NUM_SIMULATIONS * 100;
-        double playerLosePercentage = (double) playerLosses / NUM_SIMULATIONS * 100;
+    // private static void printFinalResults(int playerWins, int playerDraws, int playerLosses) {
+    //     // double playerWinPercentage = (double) playerWins / NUM_SIMULATIONS * 100;
+    //     // double drawPercentage = (double) playerDraws / NUM_SIMULATIONS * 100;
+    //     // double playerLosePercentage = (double) playerLosses / NUM_SIMULATIONS * 100;
     
-        playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
-        drawPercentage = Math.round(drawPercentage * 10) / 10.0;
-        playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
+    //     playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
+    //     drawPercentage = Math.round(drawPercentage * 10) / 10.0;
+    //     playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
     
-        System.out.println("\n=====================================\n");
-        System.out.println("    Monte-Carlo Algorithm Results:   \n");
-        System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
-        System.out.println("Player losses: " + playerLosses + " => " + playerLosePercentage + "%");
-        System.out.println("Draws: " + playerDraws + " => " + drawPercentage + "%");
-    }    
+    //     System.out.println("\n=====================================\n");
+    //     System.out.println("    Monte-Carlo Algorithm Results:   \n");
+    //     System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
+    //     System.out.println("Player losses: " + playerLosses + " => " + playerLosePercentage + "%");
+    //     System.out.println("Draws: " + playerDraws + " => " + drawPercentage + "%");
+    // }    
     
 }
 

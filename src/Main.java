@@ -5,7 +5,7 @@ import javax.swing.JOptionPane;
 public class Main {
     public static void main(String[] args) {
         // code to call the outputs in the compiler to train
-        monteCarlo.runSimulation();
+        monteCarloControl.Q = monteCarloPredict.runSimulation();
 
         // Show JOptionPane before initializing GUI
         int option = JOptionPane.showConfirmDialog(null, "Welcome to Blackjack!", "Welcome", JOptionPane.OK_CANCEL_OPTION);
