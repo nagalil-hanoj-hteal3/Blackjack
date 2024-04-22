@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 
 public class Main {
     public static void main(String[] args) {
-        // code to call the outputs in the compiler
+        // code to call the outputs in the compiler to train
         monteCarlo.runSimulation();
 
         // Show JOptionPane before initializing GUI
