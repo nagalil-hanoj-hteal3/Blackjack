@@ -63,7 +63,8 @@ public class monteCarloPredict {
 
                 //basic policy: if under 17 then hit, if 17 or over then 20% chance to hit and 80% chance to stand
                 //0 = hit, 1 = stand
-                int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < 0.8))? 1 : 0;
+                //int action = ((Blackjack.getPlayerScore() >= 17) && (randNum < 0.8))? 1 : 0;
+                int action = rand.nextInt(2);
 
                 int reward = determineReward(Blackjack);
 
@@ -95,10 +96,20 @@ public class monteCarloPredict {
             List<Integer> stateActionPair = new ArrayList<>();
             stateActionPair.add(step.state);
             stateActionPair.add(step.action);
+
+            int first_occurence_idx = -1;
+            for (int j = 0; j < episode.size(); j++) {
+                if (episode.get(j).state == step.state && episode.get(j).action == step.action) {
+                    first_occurence_idx = i;
+                    break;
+                }
+            }
     
             double G = 0;
-            for (int j = i; j < episode.size(); j++) {
-                G += Math.pow(gamma, j - i) * episode.get(j).reward;
+            for (int j = first_occurence_idx; j < episode.size(); j++) {
+                double gammaPower = Math.pow(gamma, j - first_occurence_idx);
+                double reward = episode.get(j).reward;
+                G += reward * gammaPower;
             }
     
             // Update returns_sum and N
@@ -117,8 +128,8 @@ public class monteCarloPredict {
                 Q.put(stateActionPair, new double[]{0.0});
             }
             double[] qValues = Q.get(stateActionPair);
-            qValues[0] += returns_sum.get(stateActionPair)[0] / N.get(stateActionPair);
-            //qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
+            //qValues[0] += returns_sum.get(stateActionPair)[0] / N.get(stateActionPair);
+            qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
             Q.put(stateActionPair, qValues);
         }
     }

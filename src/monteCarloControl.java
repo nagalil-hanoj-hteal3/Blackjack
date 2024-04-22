@@ -14,6 +14,9 @@ public class monteCarloControl {
     private static final double gamma = 1.0;
     private static final double decay = 0.99;
 
+    private static int State;
+    private static int Action;
+
     //private static Map<List<Integer>, double[]> returns_sum = new HashMap<>();
     //Map<List<Integer>, Double> N = new HashMap<>();
     public static Map<List<Integer>, double[]> Q = new HashMap<>();
@@ -32,60 +35,58 @@ public class monteCarloControl {
     }
 
     // Used to run the Monte Carlo algorithm
-    public static void simulate() {
-        double epsilon = initialEpsilon;
-        // int[] stats = new int[3];
+    // public static void simulate() {
+    //     double epsilon = initialEpsilon;
+    //     // int[] stats = new int[3];
 
-        // for randomizing their exploration/exploitation
-        Random rand = new Random();
+    //     // for randomizing their exploration/exploitation
+    //     Random rand = new Random();       
 
-        
+    //     // for (int i = 0; i < NUM_SIMULATIONS; i++) {
+    //         // this is the exploration rate
+    //         // epsilon = Math.max(initialEpsilon * decay, minEpsilon);
+    //     epsilon = Math.max(initialEpsilon * decay, minEpsilon);
 
-        // for (int i = 0; i < NUM_SIMULATIONS; i++) {
-            // this is the exploration rate
-            // epsilon = Math.max(initialEpsilon * decay, minEpsilon);
-            epsilon = Math.max(initialEpsilon * decay, minEpsilon);
+    //     List<EpisodeStep> episode = new ArrayList<>();
+    //     blackjack Blackjack = new blackjack();
+    //     Blackjack.dealInitialHands();
 
-            List<EpisodeStep> episode = new ArrayList<>();
-            blackjack Blackjack = new blackjack();
-            Blackjack.dealInitialHands();
+    //     // this while loop determines the exploration and exploitation
+    //     while (!Blackjack.isPlayerBust()) {
+    //         int state = Blackjack.getPlayerScore();
+    //         int action;
 
-            // this while loop determines the exploration and exploitation
-            while (!Blackjack.isPlayerBust()) {
-                int state = Blackjack.getPlayerScore();
-                int action;
+    //         // Epsilon-greedy action selection
+    //         if (rand.nextDouble() < epsilon) {
+    //             // Exploration: Choose a random action
+    //             action = rand.nextInt(2); // Assuming there are 2 actions (hit or stand)
+    //         } else {
+    //             // Exploitation: Choose the action with the highest estimated value
+    //             action = getBestAction(state);
+    //         }
 
-                // Epsilon-greedy action selection
-                if (rand.nextDouble() < epsilon) {
-                    // Exploration: Choose a random action
-                    action = rand.nextInt(2); // Assuming there are 2 actions (hit or stand)
-                } else {
-                    // Exploitation: Choose the action with the highest estimated value
-                    action = getBestAction(Q, state);
-                }
+    //         int reward = determineReward(Blackjack);
 
-                int reward = determineReward(Blackjack);
+    //         EpisodeStep step = new EpisodeStep(state, action, reward);
+    //         episode.add(step);
 
-                EpisodeStep step = new EpisodeStep(state, action, reward);
-                episode.add(step);
+    //         if (action == 0) {
+    //             break;
+    //         }
 
-                if (action == 0) {
-                    break;
-                }
+    //         Blackjack.playerHit();
+    //     }
 
-                Blackjack.playerHit();
-            }
+    //     // Update Q-values after all simulations
+    //     update_Q(episode, Q, alpha, epsilon);
 
-            // Update Q-values after all simulations
-            update_Q(episode, Q, alpha, epsilon);
+    //     // updateStatistics(Blackjack, stats, i);
+    //     // }
 
-            // updateStatistics(Blackjack, stats, i);
-        // }
+    //     // printFinalResults(stats[0], stats[1], stats[2]);
 
-        // printFinalResults(stats[0], stats[1], stats[2]);
-
-        System.out.println("\n=====================================\n");
-    }
+    //     System.out.println("\n=====================================\n");
+    // }
 
     private static void update_Q(List<EpisodeStep> episode, Map<List<Integer>, double[]> Q, double alpha, double epsilon) {
         for (int i = 0; i < episode.size(); i++) {
@@ -93,53 +94,93 @@ public class monteCarloControl {
             List<Integer> stateActionPair = new ArrayList<>();
             stateActionPair.add(step.state);
             stateActionPair.add(step.action);
-    
-            double G = 0;
-            for (int j = i; j < episode.size(); j++) {
-                G += Math.pow(gamma, j - i) * episode.get(j).reward;
+
+            int first_occurence_idx = -1;
+            for (int j = 0; j < episode.size(); j++) {
+                if (episode.get(j).state == step.state && episode.get(j).action == step.action) {
+                    first_occurence_idx = i;
+                    break;
+                }
             }
     
-            // Update returns_sum and N
-            // if (!returns_sum.containsKey(stateActionPair)) {
-            //     returns_sum.put(stateActionPair, new double[]{0.0});
+            double G = 0;
+            for (int j = first_occurence_idx; j < episode.size(); j++) {
+                double gammaPower = Math.pow(gamma, j - first_occurence_idx);
+                double reward = episode.get(j).reward;
+                G += reward * gammaPower;
+            }
+    
+            // if (!N.containsKey(stateActionPair)) {
+            //     N.put(stateActionPair, 0.0);
             // }
-            // returns_sum.get(stateActionPair)[0] += G;
+            // N.put(stateActionPair, N.get(stateActionPair) + 1);
     
             // Update Q-value with alpha
             if (!Q.containsKey(stateActionPair)) {
                 Q.put(stateActionPair, new double[]{0.0});
             }
             double[] qValues = Q.get(stateActionPair);
+            //qValues[0] += returns_sum.get(stateActionPair)[0] / N.get(stateActionPair);
             qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
             Q.put(stateActionPair, qValues);
         }
     }
 
     // Method to determine the best action based on Q-values
-    private static int getBestAction(Map<List<Integer>, double[]> Q, int state) {
+    public int getBestAction(int state) {
+        int action;
+        
+        // int reward = determineReward(Blackjack);
+
         // Assuming there are only two actions (hit or stand)
         if (Q.containsKey(Arrays.asList(state, 0)) && Q.containsKey(Arrays.asList(state, 1))) {
-            if ((Q.get(Arrays.asList(state, 0))[0] > Q.get(Arrays.asList(state, 1))[0]) || state < 17) {
-                return 0; // Hit
+            System.out.println("Value of hitting: " + Q.get(Arrays.asList(state, 0))[0]);
+            System.out.println("Value of standing: " + Q.get(Arrays.asList(state, 1))[0]);
+            if ((Q.get(Arrays.asList(state, 0))[0] > Q.get(Arrays.asList(state, 1))[0])) {
+                //return 0; // Hit
+                action = 0;
+                System.out.println("Hit");
+                
             } else {
-                return 1; // Stand
+                //return 1; // Stand
+                action = 1;
+                System.out.println("Stand");
             }
         } 
         else {
             // If no Q-values are available, choose randomly
-            return new Random().nextInt(2);
+            System.out.println("No Q-value, choose random");
+            action = new Random().nextInt(2);
         }
+        
+        State = state;
+        Action = action;
+
+        //EpisodeStep step = new EpisodeStep(state, action, 0);
+        //episode.add(step);
+
+        // update_Q(episode, Q, state, action);
+
+        return action;
     }
 
     // Method to determine the reward for the current state
-    private static int determineReward(blackjack Blackjack) {
-        if (Blackjack.isPlayerWin()) {
-            return 1;
-        } 
-        // else if (Blackjack.isGameDraw()) {
-        //     return 0;
-        // }
-        return -1; 
+    public static void determineReward(int reward) {
+        List<EpisodeStep> episode = new ArrayList<>();
+        
+        EpisodeStep step = new EpisodeStep(State, Action, 0);
+        episode.add(step);
+
+        update_Q(episode, Q, State, Action);
+        
+        // return ;
+        // if (Blackjack.isPlayerWin()) {
+        //     return 1;
+        // } 
+        // // else if (Blackjack.isGameDraw()) {
+        // //     return 0;
+        // // }
+        // return -1; 
     }
 
     // Method to update win/loss statistics

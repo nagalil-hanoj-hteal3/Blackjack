@@ -28,7 +28,7 @@ public class GUI {
     private boolean isSimulating = false;
 
     // constructor
-    public GUI() {
+    public GUI(monteCarloControl control) {
         frame = new JFrame("Blackjack");
         frame.setLayout(new BorderLayout());
 
@@ -109,14 +109,17 @@ public class GUI {
                 if (Blackjack.isDealerBust() || Blackjack.isPlayerWin()) {
                     endGame();
                     updateResultLabel("Player Wins!");
+                    control.determineReward(1);
                     choice = JOptionPane.showConfirmDialog(frame, "Player Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else if (Blackjack.isDealerWin()) {
                     endGame();
                     updateResultLabel("Dealer Wins!");
+                    control.determineReward(-1);
                     choice = JOptionPane.showConfirmDialog(frame, "Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else {
                     endGame();
                     updateResultLabel("It is a stalemate!");
+                    control.determineReward(0);
                     choice = JOptionPane.showConfirmDialog(frame, "Draw! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 }
 
@@ -151,11 +154,11 @@ public class GUI {
                             }
         
                             // Decide whether to hit or stand using Monte Carlo algorithm
-                            if (Blackjack.getPlayerScore() >= 17 && isSimulating) {
-                                // Stand if player's score is 17 or higher
+                            if (control.getBestAction(Blackjack.getPlayerScore()) == 1) {
+                                // Stand
                                 standButton.doClick();
                             } else {
-                                // Hit if player's score is less than 17
+                                // Hit
                                 Blackjack.playerHit();
                                 updateGUI();
                                 printGameProgress();
@@ -163,6 +166,7 @@ public class GUI {
         
                             // Check if player has busted
                             if (Blackjack.isPlayerBust()) {
+                                control.determineReward(-1);
                                 endGame();
                                 updateResultLabel("Player Bust! Dealer Wins!");
         

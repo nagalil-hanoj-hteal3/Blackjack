@@ -5,7 +5,8 @@ import javax.swing.JOptionPane;
 public class Main {
     public static void main(String[] args) {
         // code to call the outputs in the compiler to train
-        monteCarloControl.Q = monteCarloPredict.runSimulation();
+        monteCarloControl control = new monteCarloControl();
+        control.Q = monteCarloPredict.runSimulation();
 
         // Show JOptionPane before initializing GUI
         int option = JOptionPane.showConfirmDialog(null, "Welcome to Blackjack!", "Welcome", JOptionPane.OK_CANCEL_OPTION);
@@ -20,7 +21,7 @@ public class Main {
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     @SuppressWarnings("unused")
-                    GUI gui = new GUI();
+                    GUI gui = new GUI(control);
                 }
             });
         }
