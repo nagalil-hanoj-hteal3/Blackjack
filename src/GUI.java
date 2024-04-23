@@ -109,17 +109,17 @@ public class GUI {
                 if (Blackjack.isDealerBust() || Blackjack.isPlayerWin()) {
                     endGame();
                     updateResultLabel("Player Wins!");
-                    control.determineReward(1);
+                    control.determineReward(Blackjack);
                     choice = JOptionPane.showConfirmDialog(frame, "Player Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else if (Blackjack.isDealerWin()) {
                     endGame();
                     updateResultLabel("Dealer Wins!");
-                    control.determineReward(-1);
+                    control.determineReward(Blackjack);
                     choice = JOptionPane.showConfirmDialog(frame, "Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else {
                     endGame();
                     updateResultLabel("It is a stalemate!");
-                    control.determineReward(0);
+                    control.determineReward(Blackjack);
                     choice = JOptionPane.showConfirmDialog(frame, "Draw! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 }
 
@@ -148,7 +148,7 @@ public class GUI {
                         while (!Blackjack.isPlayerBust() && isSimulating) {
                             // Pause for a short duration to simulate card reveal
                             try {
-                                Thread.sleep(1000); // Adjust the delay time as needed
+                                Thread.sleep(500); // Adjust the delay time as needed
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -166,7 +166,7 @@ public class GUI {
         
                             // Check if player has busted
                             if (Blackjack.isPlayerBust()) {
-                                control.determineReward(-1);
+                                control.determineReward(Blackjack);
                                 endGame();
                                 updateResultLabel("Player Bust! Dealer Wins!");
         
