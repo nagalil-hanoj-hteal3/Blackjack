@@ -6,7 +6,9 @@ public class Main {
     public static void main(String[] args) {
         // code to call the outputs in the compiler to train
         monteCarloControl control = new monteCarloControl();
-        control.Q = monteCarloPredict.runSimulation();
+        monteCarloPredict.runSimulation();
+
+        control.mc_control(10);
 
         // Show JOptionPane before initializing GUI
         int option = JOptionPane.showConfirmDialog(null, "Welcome to Blackjack!", "Welcome", JOptionPane.OK_CANCEL_OPTION);
