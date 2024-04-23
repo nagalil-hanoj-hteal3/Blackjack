@@ -148,7 +148,7 @@ public class GUI {
                         while (!Blackjack.isPlayerBust() && isSimulating) {
                             // Pause for a short duration to simulate card reveal
                             try {
-                                Thread.sleep(1000); // Adjust the delay time as needed
+                                Thread.sleep(500); // Adjust the delay time as needed
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
