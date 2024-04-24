@@ -15,6 +15,7 @@ public class monteCarloPredict {
     private static final double decay = 0.99;
 
     public static Map<List<Integer>, double[]> Q;
+    public static Map<List<Integer>, Double> N;
 
     static class EpisodeStep {
         int playerScore;
@@ -33,7 +34,7 @@ public class monteCarloPredict {
     public static Map<List<Integer>, double[]> runSimulation() {
         double epsilon = initialEpsilon;
         Map<List<Integer>, double[]> returnsSum = new HashMap<>();
-        Map<List<Integer>, Double> N = new HashMap<>();
+        N = new HashMap<>();
         Q = new HashMap<>();
         int[] stats = new int[3];
 
@@ -47,7 +48,7 @@ public class monteCarloPredict {
             blackjack blackjack = new blackjack();
             blackjack.dealInitialHands();
 
-            while (!blackjack.isPlayerBust()) {
+            while (!blackjack.isPlayerBust() || blackjack.isDealerWin()) {
                 int playerScore = blackjack.getPlayerScore();
                 int dealerCard = blackjack.getDealerHand().get(0).getRank().getValue();
 
@@ -69,7 +70,7 @@ public class monteCarloPredict {
                 blackjack.playerHit();
             }
             updateStatistics(blackjack, stats, i);
-            updateQ(episode, returnsSum, N);
+            updateQ(episode, returnsSum, N); 
         }
 
         printFinalResults(stats[0], stats[1], stats[2]);

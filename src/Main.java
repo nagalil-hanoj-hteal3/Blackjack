@@ -8,9 +8,10 @@ public class Main {
         // code to call the outputs in the compiler to train
         monteCarloControl control = new monteCarloControl();
         int num = monteCarloPredict.getNumSimulations();
+        Map<List<Integer>, Double> N = monteCarloPredict.N;
         Map<List<Integer>, double[]> QValues = monteCarloPredict.runSimulation();
 
-        control.mc_control(num, QValues); // Pass Q-values to mc_control
+        control.mc_control(num, QValues, N); // Pass Q-values to mc_control
 
         // Show JOptionPane before initializing GUI
         int option = JOptionPane.showConfirmDialog(null, "Welcome to Blackjack!", "Welcome", JOptionPane.OK_CANCEL_OPTION);
