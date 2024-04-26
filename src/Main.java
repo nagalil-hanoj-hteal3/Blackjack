@@ -8,8 +8,8 @@ public class Main {
         // code to call the outputs in the compiler to train
         monteCarloControl control = new monteCarloControl();
         int num = monteCarloPredict.getNumSimulations();
-        Map<List<Integer>, Double> N = monteCarloPredict.N;
         Map<List<Integer>, double[]> QValues = monteCarloPredict.runSimulation();
+        Map<List<Integer>, Double> N = monteCarloPredict.N;
 
         control.mc_control(num, QValues, N); // Pass Q-values to mc_control
 

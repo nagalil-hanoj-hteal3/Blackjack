@@ -79,21 +79,37 @@ public class monteCarloControl {
 
             N.putIfAbsent(stateActionPair, 0.0);
             N.put(stateActionPair, N.get(stateActionPair) + 1);
-
+            
             Q.putIfAbsent(stateActionPair, new double[]{0.0});
             double[] qValues = Q.get(stateActionPair);
             qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
+            //qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
             Q.put(stateActionPair, qValues);
         }
     }    
 
-    public int getBestAction(int state) {
-        double[] value = Q.getOrDefault(Arrays.asList(state, 0), new double[1]);
+    public int getBestAction(int state, int dealerCard) {
+        List<Integer> hitPair = new ArrayList<>();
+        hitPair.add(state);
+        hitPair.add(dealerCard);
+        hitPair.add(0);
+
+        List<Integer> standPair = new ArrayList<>();
+        standPair.add(state);
+        standPair.add(dealerCard);
+        standPair.add(1);
+
+        Q.putIfAbsent(hitPair, new double[]{0.0});
+        Q.putIfAbsent(standPair, new double[]{0.0});
+        double[] hitValue = Q.get(hitPair);
+        double[] standValue = Q.get(standPair);
         //double[] standValues = Q.getOrDefault(Arrays.asList(state, 1), new double[1]);
         
-         System.out.println("Value: " + value[0]);
+        System.out.println("Dealer Card: " + dealerCard);
+        System.out.println("Hit Value: " + hitValue[0]);
+        System.out.println("Stand Value: " + standValue[0]);
          //System.out.println("Stand Value: "+standValues[0]);
-        if (value[0] <= 0) {
+        if (hitValue[0] > standValue[0]) {
             return 0; // Hit
         } else {
             return 1; // Stand

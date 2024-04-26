@@ -53,7 +53,7 @@ public class GUI {
 
         hitButton = new JButton("Hit");
         standButton = new JButton("Stand");
-        simButton = new JButton("Simulate");
+        simButton = new JButton("Auto Choose");
 
         hitButton.addActionListener(new ActionListener() {
             @Override
@@ -154,8 +154,10 @@ public class GUI {
                         // Run Monte Carlo simulation
                         // monteCarlo.runSimulation();
                         
+                        int number = 0;
                         // Keep updating GUI until player busts or decides to stand
-                        while (!Blackjack.isPlayerBust() && isSimulating) {
+                        while (/*!Blackjack.isPlayerBust() && isSimulating*/number == 0) {
+                            number++;
                             // Pause for a short duration to simulate card reveal
                             try {
                                 Thread.sleep(500); // Adjust the delay time as needed
@@ -164,7 +166,7 @@ public class GUI {
                             }
         
                             // Decide whether to hit or stand using Monte Carlo algorithm
-                            if (control.getBestAction(Blackjack.getPlayerScore()) == 1) {
+                            if (control.getBestAction(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue()) == 1) {
                                 // Stand
                                 standButton.doClick();
                             } else {
