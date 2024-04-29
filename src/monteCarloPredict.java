@@ -161,7 +161,7 @@ public class monteCarloPredict {
 
     private static int determineReward(blackjack blackjack) {
         if (blackjack.isPlayerWin()) { return 1; } 
-        else if (blackjack.isGameDraw()) { return 0; }
+        else if (blackjack.isGameDraw() || (blackjack.getPlayerScore() < 21 && blackjack.getDealerScore() < 21)) { return 0; }
         else { return -1; }
     }
 }

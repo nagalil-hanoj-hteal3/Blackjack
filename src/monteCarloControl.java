@@ -105,7 +105,7 @@ public class monteCarloControl {
         double[] standValue = Q.get(standPair);
         //double[] standValues = Q.getOrDefault(Arrays.asList(state, 1), new double[1]);
         
-        System.out.println("Dealer Card: " + dealerCard);
+        //System.out.println("Dealer Card: " + dealerCard);
         System.out.println("Hit Value: " + hitValue[0]);
         System.out.println("Stand Value: " + standValue[0]);
          //System.out.println("Stand Value: "+standValues[0]);
