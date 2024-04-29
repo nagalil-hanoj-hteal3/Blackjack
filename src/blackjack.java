@@ -84,6 +84,21 @@ public class blackjack {
         dealerScore = calculateScore(dealerHand);
     }
 
+    public int getDealerShownScore() {
+        int score = 0;
+        Card card = dealerHand.get(0);
+
+        if (card.getRank().getValue() == 1) {
+            score += 11;
+        } else if (card.getRank().getValue() > 10) {
+            score += 10;
+        } else {
+            score += card.getRank().getValue();
+        }
+
+        return score;
+    }
+
     public boolean isPlayerBust() { return playerScore > 21; }
 
     public boolean isDealerBust() { return dealerScore > 21; }

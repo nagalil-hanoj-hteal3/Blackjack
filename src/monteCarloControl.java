@@ -112,6 +112,10 @@ public class monteCarloControl {
         if (hitValue[0] > standValue[0]) {
             return 0; // Hit
         } else {
+            if(state <= 11) {
+                System.out.println("Score <= 11, hitting regardless.");
+                return 0; // Hit
+            }
             return 1; // Stand
         }
     }

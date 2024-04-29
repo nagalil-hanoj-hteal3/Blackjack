@@ -50,7 +50,7 @@ public class monteCarloPredict {
 
             while (!blackjack.isPlayerBust() || blackjack.isDealerWin()) {
                 int playerScore = blackjack.getPlayerScore();
-                int dealerCard = blackjack.getDealerHand().get(0).getRank().getValue();
+                int dealerCard = blackjack.getDealerShownScore();
 
                 int action;
                 if (rand.nextDouble() < epsilon) {

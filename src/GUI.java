@@ -64,7 +64,7 @@ public class GUI {
                 if (Blackjack.getPlayerScore() == 21) {
                     // Player wins with a blackjack
                     endGame();
-                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 0, 1);
+                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 0, 1);
                     updateResultLabel("Player wins with a Blackjack!");
                     choice = JOptionPane.showConfirmDialog(frame, "Player wins with a Blackjack! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                     if (choice == JOptionPane.YES_OPTION) {
@@ -75,7 +75,7 @@ public class GUI {
                     }
                 } else if (Blackjack.isPlayerBust()) {
                     endGame();
-                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 0, -1);
+                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 0, -1);
                     updateResultLabel("Player Bust! Dealer Wins!");
                     // JOptionPane.showMessageDialog(frame, "Player Bust! Dealer Wins!");
                     choice = JOptionPane.showConfirmDialog(frame, "Player Bust! Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
@@ -86,7 +86,7 @@ public class GUI {
                         frame.dispose();
                     }
                 } else {
-                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 0, 0);
+                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 0, 0);
                 }
             }
         });
@@ -114,19 +114,19 @@ public class GUI {
 
                 if (Blackjack.isDealerBust() || Blackjack.isPlayerWin()) {
                     endGame();
-                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 1, 1);
+                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 1, 1);
                     updateResultLabel("Player Wins!");
                     control.determineReward(Blackjack);
                     choice = JOptionPane.showConfirmDialog(frame, "Player Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else if (Blackjack.isDealerWin()) {
                     endGame();
-                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 1, -1);
+                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 1, -1);
                     updateResultLabel("Dealer Wins!");
                     control.determineReward(Blackjack);
                     choice = JOptionPane.showConfirmDialog(frame, "Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else {
                     endGame();
-                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 1, 0);
+                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 1, 0);
                     updateResultLabel("It is a stalemate!");
                     control.determineReward(Blackjack);
                     choice = JOptionPane.showConfirmDialog(frame, "Draw! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
@@ -159,14 +159,14 @@ public class GUI {
                         while (/*!Blackjack.isPlayerBust() && isSimulating*/number == 0) {
                             number++;
                             // Pause for a short duration to simulate card reveal
-                            try {
+                            /*try {
                                 Thread.sleep(500); // Adjust the delay time as needed
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
-                            }
+                            }*/
         
                             // Decide whether to hit or stand using Monte Carlo algorithm
-                            if (control.getBestAction(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue()) == 1) {
+                            if (control.getBestAction(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore()) == 1) {
                                 // Stand
                                 standButton.doClick();
                             } else {
@@ -175,12 +175,26 @@ public class GUI {
                                 updateGUI();
                                 printGameProgress();
                             }
-        
+                            
+                            //player win
+                            if (Blackjack.getPlayerScore() == 21) {
+                                // Player wins with a blackjack
+                                endGame();
+                                control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 0, 1);
+                                updateResultLabel("Player wins with a Blackjack!");
+                                choice = JOptionPane.showConfirmDialog(frame, "Player wins with a Blackjack! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
+                                if (choice == JOptionPane.YES_OPTION) {
+                                    control.clearEpisode();
+                                    restartGame();
+                                } else {
+                                    frame.dispose();
+                                }
+                            }
                             // Check if player has busted
-                            if (Blackjack.isPlayerBust()) {
+                            else if (Blackjack.isPlayerBust()) {
                                 control.determineReward(Blackjack);
                                 endGame();
-                                control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 0, -1);
+                                control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 0, -1);
                                 updateResultLabel("Player Bust! Dealer Wins!");
         
                                 // Display option to restart game
@@ -193,7 +207,7 @@ public class GUI {
                                 }
                                 return; // Exit the thread if the game is over
                             } else {
-                                control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerHand().get(0).getRank().getValue(), 0, 0);
+                                control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 0, 0);
                             }
                         }
                     }
