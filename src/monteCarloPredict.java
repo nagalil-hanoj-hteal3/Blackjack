@@ -14,7 +14,6 @@ public class monteCarloPredict {
     private static final double gamma = 1.0;
     private static final double decay = 0.99;
 
-    public static Map<List<Integer>, double[]> Q;
     public static Map<List<Integer>, Double> N;
 
     static class EpisodeStep {
@@ -31,7 +30,8 @@ public class monteCarloPredict {
         }
     }
 
-    public static Map<List<Integer>, double[]> runSimulation() {
+    //int policy (0 = basic policy, 1 = random policy)
+    public static Map<List<Integer>, double[]> runSimulation(Map<List<Integer>, double[]> Q, int policy) {
         double epsilon = initialEpsilon;
         Map<List<Integer>, double[]> returnsSum = new HashMap<>();
         N = new HashMap<>();
@@ -64,7 +64,11 @@ public class monteCarloPredict {
                 }*/
 
                 //stand (1) 80% chance when score 17 or more, else hit (0)
-                action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
+                if(policy == 0) {
+                    action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
+                } else {
+                    action = rand.nextInt(2);
+                }
 
 
                 int reward = determineReward(blackjack);
