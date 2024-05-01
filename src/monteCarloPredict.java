@@ -38,6 +38,7 @@ public class monteCarloPredict {
         Q = new HashMap<>();
         int[] stats = new int[3];
 
+        double policyProb = 0.8;
         Random rand = new Random();
 
         for (int i = 0; i < NUM_SIMULATIONS; i++) {
@@ -52,12 +53,19 @@ public class monteCarloPredict {
                 int playerScore = blackjack.getPlayerScore();
                 int dealerCard = blackjack.getDealerShownScore();
 
+                double randNum = rand.nextDouble();
+                randNum = Math.round(randNum * 10.0) / 10.0;
+
                 int action;
-                if (rand.nextDouble() < epsilon) {
+                /*if (rand.nextDouble() < epsilon) {
                     action = rand.nextInt(2); // Random action
                 } else {
                     action = (playerScore >= 17) ? 1 : 0; // Basic policy: hit if player score is less than 17, stand otherwise
-                }
+                }*/
+
+                //stand (1) 80% chance when score 17 or more, else hit (0)
+                action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
+
 
                 int reward = determineReward(blackjack);
                 EpisodeStep step = new EpisodeStep(playerScore, dealerCard, action, reward);
