@@ -13,15 +13,17 @@ public class Main {
         Map<List<Integer>, Double> N_basic;
 
         Map<List<Integer>, double[]> Q_rand = new HashMap<>();
-        Map<List<Integer>, Double> N_rand;
+        //Map<List<Integer>, Double> N_rand;
 
+        //basic policy
         Q_basic = monteCarloPredict.runSimulation(Q_basic, 0);
         N_basic = monteCarloPredict.N;
 
+        //random policy
         Q_rand = monteCarloPredict.runSimulation(Q_rand, 1);
-        N_rand = monteCarloPredict.N;
+        //N_rand = monteCarloPredict.N;
 
-        control.mc_control(num, Q_basic, N_basic); // Pass Q-values to mc_control
+        control.mc_control(num, Q_basic, N_basic, Q_rand); // Pass Q-values to mc_control
 
         // Show JOptionPane before initializing GUI
         int option = JOptionPane.showConfirmDialog(null, "Welcome to Blackjack!", "Welcome", JOptionPane.OK_CANCEL_OPTION);

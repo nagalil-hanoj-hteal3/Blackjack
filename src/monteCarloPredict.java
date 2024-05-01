@@ -32,7 +32,7 @@ public class monteCarloPredict {
 
     //int policy (0 = basic policy, 1 = random policy)
     public static Map<List<Integer>, double[]> runSimulation(Map<List<Integer>, double[]> Q, int policy) {
-        double epsilon = initialEpsilon;
+        //double epsilon = initialEpsilon;
         Map<List<Integer>, double[]> returnsSum = new HashMap<>();
         N = new HashMap<>();
         Q = new HashMap<>();
@@ -42,7 +42,7 @@ public class monteCarloPredict {
         Random rand = new Random();
 
         for (int i = 0; i < NUM_SIMULATIONS; i++) {
-            epsilon = Math.max(initialEpsilon * Math.pow(decay, i), minEpsilon);
+            //epsilon = Math.max(initialEpsilon * Math.pow(decay, i), minEpsilon);
             
 
             List<EpisodeStep> episode = new ArrayList<>();
@@ -82,7 +82,7 @@ public class monteCarloPredict {
                 blackjack.playerHit();
             }
             updateStatistics(blackjack, stats, i);
-            updateQ(episode, returnsSum, N); 
+            Q = updateQ(episode, returnsSum, N, Q); 
         }
 
         printFinalResults(stats[0], stats[1], stats[2]);
@@ -135,7 +135,7 @@ public class monteCarloPredict {
         System.out.println("Draws: " + playerDraws + " => " + drawPercentage + "%");
     }
 
-    private static void updateQ(List<EpisodeStep> episode, Map<List<Integer>, double[]> returnsSum, Map<List<Integer>, Double> N) {
+    private static Map<List<Integer>, double[]> updateQ(List<EpisodeStep> episode, Map<List<Integer>, double[]> returnsSum, Map<List<Integer>, Double> N, Map<List<Integer>, double[]> Q) {
         for (int i = 0; i < episode.size(); i++) {
             EpisodeStep step = episode.get(i);
             List<Integer> stateActionPair = new ArrayList<>();
@@ -169,6 +169,8 @@ public class monteCarloPredict {
             qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
             Q.put(stateActionPair, qValues);
         }
+
+        return Q;
     }
 
     private static int determineReward(blackjack blackjack) {

@@ -10,15 +10,17 @@ public class monteCarloControl {
     private static final double decay = 0.99;
 
     private Map<List<Integer>, double[]> Q = new HashMap<>();
+    private Map<List<Integer>, double[]> Q_random = new HashMap<>();
     private Map<List<Integer>, Double> N;
     private List<EpisodeStep> episode = new ArrayList<>();
 
-    public void mc_control(int num_episodes, Map<List<Integer>, double[]> QValues, Map<List<Integer>, Double> predictN) {
+    public void mc_control(int num_episodes, Map<List<Integer>, double[]> QValues, Map<List<Integer>, Double> predictN, Map<List<Integer>, double[]> Q_rand) {
         //Random rand = new Random();
         int nA = 2; // Assuming two actions (hit or stand)
         
         // Initialize Q map with the provided QValues
         Q = new HashMap<>(QValues);
+        Q_random = new HashMap<>(Q_rand);
         N = new HashMap<>(predictN);
 
         
@@ -101,13 +103,19 @@ public class monteCarloControl {
 
         Q.putIfAbsent(hitPair, new double[]{0.0});
         Q.putIfAbsent(standPair, new double[]{0.0});
+        Q_random.putIfAbsent(hitPair, new double[]{0.0});
+        Q_random.putIfAbsent(standPair, new double[]{0.0});
         double[] hitValue = Q.get(hitPair);
         double[] standValue = Q.get(standPair);
+        double[] randHitValue = Q_random.get(hitPair);
+        double[] randStandValue = Q_random.get(standPair);
         //double[] standValues = Q.getOrDefault(Arrays.asList(state, 1), new double[1]);
         
         //System.out.println("Dealer Card: " + dealerCard);
         System.out.println("Hit Value: " + hitValue[0]);
         System.out.println("Stand Value: " + standValue[0]);
+        System.out.println("Random Hit Value: " + randHitValue[0]);
+        System.out.println("Random Stand Value: " + randStandValue[0]);
          //System.out.println("Stand Value: "+standValues[0]);
         if (hitValue[0] > standValue[0]) {
             return 0; // Hit
