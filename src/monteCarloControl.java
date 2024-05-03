@@ -107,25 +107,118 @@ public class monteCarloControl {
         Q_random.putIfAbsent(standPair, new double[]{0.0});
         double[] hitValue = Q.get(hitPair);
         double[] standValue = Q.get(standPair);
-        double[] randHitValue = Q_random.get(hitPair);
-        double[] randStandValue = Q_random.get(standPair);
+        //double[] randHitValue = Q_random.get(hitPair);
+        //double[] randStandValue = Q_random.get(standPair);
         //double[] standValues = Q.getOrDefault(Arrays.asList(state, 1), new double[1]);
         
         //System.out.println("Dealer Card: " + dealerCard);
         System.out.println("Hit Value: " + hitValue[0]);
         System.out.println("Stand Value: " + standValue[0]);
-        System.out.println("Random Hit Value: " + randHitValue[0]);
-        System.out.println("Random Stand Value: " + randStandValue[0]);
+        //System.out.println("Random Hit Value: " + randHitValue[0]);
+        //System.out.println("Random Stand Value: " + randStandValue[0]);
          //System.out.println("Stand Value: "+standValues[0]);
         if (hitValue[0] > standValue[0]) {
             return 0; // Hit
+        } else if(state <= 11) {
+            System.out.println("Score <= 11, hitting regardless.");
+            return 0; // Hit
         } else {
-            if(state <= 11) {
-                System.out.println("Score <= 11, hitting regardless.");
-                return 0; // Hit
-            }
             return 1; // Stand
         }
+    }
+
+    private int getBestActionSimulation(int state, int dealerCard) {
+        List<Integer> hitPair = new ArrayList<>();
+        hitPair.add(state);
+        hitPair.add(dealerCard);
+        hitPair.add(0);
+
+        List<Integer> standPair = new ArrayList<>();
+        standPair.add(state);
+        standPair.add(dealerCard);
+        standPair.add(1);
+
+        Q.putIfAbsent(hitPair, new double[]{0.0});
+        Q.putIfAbsent(standPair, new double[]{0.0});
+
+        double[] hitValue = Q.get(hitPair);
+        double[] standValue = Q.get(standPair);
+
+        if (hitValue[0] > standValue[0]) {
+            return 0; // Hit
+        } else if(state <= 11) {
+            //Score <= 11, hitting regardless
+            return 0; // Hit
+        } else {
+            return 1; // Stand
+        }
+    }
+
+    public void runSimulation() {
+        Random rand = new Random();
+        int num_simulations = 500000;
+        int[] stats = new int[3];
+
+        for (int i = 0; i < num_simulations; i++) {
+            List<EpisodeStep> episode = new ArrayList<>();
+            blackjack blackjack = new blackjack();
+            blackjack.dealInitialHands();
+
+            while (!blackjack.isPlayerBust() || blackjack.isDealerWin()) {
+                int playerScore = blackjack.getPlayerScore();
+                int dealerCard = blackjack.getDealerShownScore();
+
+                double randNum = rand.nextDouble();
+                randNum = Math.round(randNum * 10.0) / 10.0;
+
+                int action = getBestActionSimulation(blackjack.getPlayerScore(), blackjack.getDealerShownScore());
+                
+                //stand (1) 80% chance when score 17 or more, else hit (0)
+                //action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
+
+                int reward;
+                if (blackjack.isPlayerWin()) {
+                    reward = 1;
+                } else if (blackjack.isPlayerBust()) {
+                    reward = -1;
+                } else {
+                    reward = 0;
+                }
+
+                EpisodeStep step = new EpisodeStep(playerScore, dealerCard, action, reward);
+                episode.add(step);
+
+                if (action == 1) {
+                    break;
+                }
+
+                blackjack.playerHit();
+            }
+
+            //update statistics
+            if (blackjack.isPlayerWin()) { stats[0]++; } 
+            else if (blackjack.isGameDraw()){ stats[1]++; } 
+            else if(blackjack.isDealerWin()) { stats[2]++; }
+        }
+        
+        System.out.println("Optimal policy results");
+        printFinalResults(stats[0], stats[1], stats[2], num_simulations);
+    }
+
+    private static void printFinalResults(int playerWins, int playerDraws, int playerLosses, int num_simulations) {
+        double playerWinPercentage = (double) playerWins / num_simulations * 100;
+        double drawPercentage = (double) playerDraws / num_simulations * 100;
+        double playerLosePercentage = (double) playerLosses / num_simulations * 100;
+    
+        playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
+        drawPercentage = Math.round(drawPercentage * 10) / 10.0;
+        playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
+    
+        System.out.println("\n=====================================\n");
+        System.out.println("    Monte-Carlo Algorithm Results:   \n");
+        System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
+        System.out.println("Player losses: " + playerLosses + " => " + playerLosePercentage + "%");
+        System.out.println("Draws: " + playerDraws + " => " + drawPercentage + "%");
     }
 
     // private double[] get_probs(List<Integer> state, double epsilon, int nA) {
@@ -172,10 +265,10 @@ public class monteCarloControl {
 
         if (Blackjack.isPlayerWin()) {
             reward = 1;
-        } else if (Blackjack.isGameDraw()) {
-            reward = 0;
-        } else {
+        } else if (Blackjack.isPlayerBust()) {
             reward = -1;
+        } else {
+            reward = 0;
         }
 
         update_Q(episode);

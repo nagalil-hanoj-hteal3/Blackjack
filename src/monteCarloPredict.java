@@ -32,7 +32,7 @@ public class monteCarloPredict {
 
     //int policy (0 = basic policy, 1 = random policy)
     public static Map<List<Integer>, double[]> runSimulation(Map<List<Integer>, double[]> Q, int policy) {
-        //double epsilon = initialEpsilon;
+        double epsilon = initialEpsilon;
         Map<List<Integer>, double[]> returnsSum = new HashMap<>();
         N = new HashMap<>();
         Q = new HashMap<>();
@@ -42,7 +42,7 @@ public class monteCarloPredict {
         Random rand = new Random();
 
         for (int i = 0; i < NUM_SIMULATIONS; i++) {
-            //epsilon = Math.max(initialEpsilon * Math.pow(decay, i), minEpsilon);
+            epsilon = Math.max(initialEpsilon * Math.pow(decay, i), minEpsilon);
             
 
             List<EpisodeStep> episode = new ArrayList<>();
@@ -57,19 +57,19 @@ public class monteCarloPredict {
                 randNum = Math.round(randNum * 10.0) / 10.0;
 
                 int action;
-                /*if (rand.nextDouble() < epsilon) {
-                    action = rand.nextInt(2); // Random action
-                } else {
-                    action = (playerScore >= 17) ? 1 : 0; // Basic policy: hit if player score is less than 17, stand otherwise
-                }*/
-
-                //stand (1) 80% chance when score 17 or more, else hit (0)
-                if(policy == 0) {
+                if (policy == 0) {
+                    /*if (rand.nextDouble() < epsilon) {
+                        action = rand.nextInt(2); // Random action
+                    } else {
+                        action = (playerScore >= 17) ? 1 : 0; // Basic policy: hit if player score is less than 17, stand otherwise
+                    }*/
                     action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
                 } else {
                     action = rand.nextInt(2);
                 }
-
+                
+                //stand (1) 80% chance when score 17 or more, else hit (0)
+                //action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
 
                 int reward = determineReward(blackjack);
                 EpisodeStep step = new EpisodeStep(playerScore, dealerCard, action, reward);
@@ -85,6 +85,14 @@ public class monteCarloPredict {
             Q = updateQ(episode, returnsSum, N, Q); 
         }
 
+        switch(policy) {
+            case 0:
+                System.out.println("Basic policy results");
+                break;
+            case 1:
+                System.out.println("Random policy results");
+                break;
+        }
         printFinalResults(stats[0], stats[1], stats[2]);
 
         System.out.println("\n=====================================\n");
@@ -175,7 +183,8 @@ public class monteCarloPredict {
 
     private static int determineReward(blackjack blackjack) {
         if (blackjack.isPlayerWin()) { return 1; } 
-        else if (blackjack.isGameDraw() || (blackjack.getPlayerScore() < 21 && blackjack.getDealerScore() < 21)) { return 0; }
-        else { return -1; }
+        //else if (blackjack.isGameDraw() || (blackjack.getPlayerScore() < 21 && blackjack.getDealerScore() < 21)) { return 0; }
+        else if (blackjack.isPlayerBust()) { return -1; }
+        else { return 0; }
     }
 }

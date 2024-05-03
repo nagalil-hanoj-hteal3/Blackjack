@@ -24,6 +24,7 @@ public class Main {
         //N_rand = monteCarloPredict.N;
 
         control.mc_control(num, Q_basic, N_basic, Q_rand); // Pass Q-values to mc_control
+        control.runSimulation();
 
         // Show JOptionPane before initializing GUI
         int option = JOptionPane.showConfirmDialog(null, "Welcome to Blackjack!", "Welcome", JOptionPane.OK_CANCEL_OPTION);

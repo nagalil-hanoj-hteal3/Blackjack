@@ -120,7 +120,7 @@ public class GUI {
                     choice = JOptionPane.showConfirmDialog(frame, "Player Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 } else if (Blackjack.isDealerWin()) {
                     endGame();
-                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 1, -1);
+                    control.addEpisodeStep(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore(), 1, 0);
                     updateResultLabel("Dealer Wins!");
                     control.determineReward(Blackjack);
                     choice = JOptionPane.showConfirmDialog(frame, "Dealer Wins! Play again?", "Game Over", JOptionPane.YES_NO_OPTION);
