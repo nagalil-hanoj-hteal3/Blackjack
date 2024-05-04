@@ -84,8 +84,8 @@ public class monteCarloControl {
             
             Q.putIfAbsent(stateActionPair, new double[]{0.0});
             double[] qValues = Q.get(stateActionPair);
-            qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
-            //qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
+            //qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
+            qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
             Q.put(stateActionPair, qValues);
         }
     }    
@@ -201,7 +201,7 @@ public class monteCarloControl {
             else if(blackjack.isDealerWin()) { stats[2]++; }
         }
         
-        System.out.println("Optimal policy results");
+        System.out.println("Optimal policy results\n");
         printFinalResults(stats[0], stats[1], stats[2], num_simulations);
     }
 
@@ -214,11 +214,12 @@ public class monteCarloControl {
         drawPercentage = Math.round(drawPercentage * 10) / 10.0;
         playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
     
-        System.out.println("\n=====================================\n");
-        System.out.println("    Monte-Carlo Algorithm Results:   \n");
+        //System.out.println("\n=====================================\n");
+        //System.out.println("    Monte-Carlo Algorithm Results:   \n");
         System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
         System.out.println("Player losses: " + playerLosses + " => " + playerLosePercentage + "%");
         System.out.println("Draws: " + playerDraws + " => " + drawPercentage + "%");
+        System.out.println("\n=====================================\n");
     }
 
     // private double[] get_probs(List<Integer> state, double epsilon, int nA) {

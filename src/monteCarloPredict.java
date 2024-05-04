@@ -11,8 +11,8 @@ public class monteCarloPredict {
 
     private static final double initialEpsilon = 1.0;
     private static final double minEpsilon = 0.01;
-    private static final double gamma = 1.0;
-    private static final double decay = 0.99;
+    private static final double gamma = 0.9;
+    private static final double decay = 0.9999;
 
     public static Map<List<Integer>, Double> N;
 
@@ -57,13 +57,15 @@ public class monteCarloPredict {
                 randNum = Math.round(randNum * 10.0) / 10.0;
 
                 int action;
+
+                //policy 0: basic policy, policy 1: random policy
                 if (policy == 0) {
-                    /*if (rand.nextDouble() < epsilon) {
+                    if (rand.nextDouble() < epsilon) {
                         action = rand.nextInt(2); // Random action
                     } else {
-                        action = (playerScore >= 17) ? 1 : 0; // Basic policy: hit if player score is less than 17, stand otherwise
-                    }*/
-                    action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
+                        //action = (playerScore >= 17) ? 1 : 0; // Basic policy: hit if player score is less than 17, stand otherwise
+                        action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0; //stand (1) 80% chance when score 17 or more, else hit (0)
+                    }
                 } else {
                     action = rand.nextInt(2);
                 }
@@ -71,7 +73,7 @@ public class monteCarloPredict {
                 //stand (1) 80% chance when score 17 or more, else hit (0)
                 //action = ((playerScore >= 17) && (randNum < policyProb))? 1 : 0;
 
-                int reward = determineReward(blackjack);
+                int reward = determineReward(blackjack, action);
                 EpisodeStep step = new EpisodeStep(playerScore, dealerCard, action, reward);
                 episode.add(step);
 
@@ -87,10 +89,10 @@ public class monteCarloPredict {
 
         switch(policy) {
             case 0:
-                System.out.println("Basic policy results");
+                System.out.println("Basic policy results\n");
                 break;
             case 1:
-                System.out.println("Random policy results");
+                System.out.println("Random policy results\n");
                 break;
         }
         printFinalResults(stats[0], stats[1], stats[2]);
@@ -136,8 +138,8 @@ public class monteCarloPredict {
         drawPercentage = Math.round(drawPercentage * 10) / 10.0;
         playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
     
-        System.out.println("\n=====================================\n");
-        System.out.println("    Monte-Carlo Algorithm Results:   \n");
+        //System.out.println("\n=====================================\n");
+        //System.out.println("    Monte-Carlo Algorithm Results:   \n");
         System.out.println("Player wins: " + playerWins + " => " + playerWinPercentage + "%");
         System.out.println("Player losses: " + playerLosses + " => " + playerLosePercentage + "%");
         System.out.println("Draws: " + playerDraws + " => " + drawPercentage + "%");
@@ -174,17 +176,18 @@ public class monteCarloPredict {
 
             Q.putIfAbsent(stateActionPair, new double[]{0.0});
             double[] qValues = Q.get(stateActionPair);
-            qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
+            //qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
+            qValues[0] = returnsSum.get(stateActionPair)[0] / N.get(stateActionPair);
             Q.put(stateActionPair, qValues);
         }
 
         return Q;
     }
 
-    private static int determineReward(blackjack blackjack) {
+    private static int determineReward(blackjack blackjack, int action) {
         if (blackjack.isPlayerWin()) { return 1; } 
         //else if (blackjack.isGameDraw() || (blackjack.getPlayerScore() < 21 && blackjack.getDealerScore() < 21)) { return 0; }
-        else if (blackjack.isPlayerBust()) { return -1; }
+        else if (blackjack.isPlayerBust() || (action == 1 && blackjack.isDealerWin())) { return -1; }
         else { return 0; }
     }
 }
