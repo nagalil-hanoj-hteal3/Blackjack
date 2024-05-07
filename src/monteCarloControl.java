@@ -3,11 +3,11 @@ package src;
 import java.util.*;
 
 public class monteCarloControl {
-    private static final double initialEpsilon = 1.0;
-    private static final double minEpsilon = 0.01;
+    //private static final double initialEpsilon = 1.0;
+    //private static final double minEpsilon = 0.01;
     private static final double alpha = 0.001;
     private static final double gamma = 1.0;
-    private static final double decay = 0.99;
+   // private static final double decay = 0.99;
 
     private Map<List<Integer>, double[]> Q = new HashMap<>();
     private Map<List<Integer>, double[]> Q_random = new HashMap<>();
@@ -57,6 +57,8 @@ public class monteCarloControl {
             qValues[0] += alpha * (G - qValues[0]); // Update Q-value using alpha
             Q.put(stateActionPair, qValues);
         }*/
+
+        //Loop through each step in the current episode (game)
         for (int i = 0; i < episode.size(); i++) {
             EpisodeStep step = episode.get(i);
             List<Integer> stateActionPair = new ArrayList<>();
@@ -64,6 +66,7 @@ public class monteCarloControl {
             stateActionPair.add(step.dealerCard);
             stateActionPair.add(step.action);
 
+            // find the first occurence of a state/action pair
             int firstOccurrenceIdx = -1;
             for (int j = i; j >= 0; j--) {
                 if (episode.get(j).playerScore == step.playerScore && episode.get(j).dealerCard == step.dealerCard && episode.get(j).action == step.action) {
@@ -72,6 +75,7 @@ public class monteCarloControl {
                 }
             }
 
+            //add discounted rewards
             double G = 0;
             for (int j = firstOccurrenceIdx; j < episode.size(); j++) {
                 double gammaPower = Math.pow(gamma, j - firstOccurrenceIdx);
@@ -82,6 +86,7 @@ public class monteCarloControl {
             N.putIfAbsent(stateActionPair, 0.0);
             N.put(stateActionPair, N.get(stateActionPair) + 1);
             
+            //update Q value
             Q.putIfAbsent(stateActionPair, new double[]{0.0});
             double[] qValues = Q.get(stateActionPair);
             //qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
@@ -90,6 +95,7 @@ public class monteCarloControl {
         }
     }    
 
+    //return the best action based on the current state
     public int getBestAction(int state, int dealerCard) {
         List<Integer> hitPair = new ArrayList<>();
         hitPair.add(state);
@@ -127,6 +133,7 @@ public class monteCarloControl {
         }
     }
 
+    //used by runSimulation() to get the best action based on the current state
     private int getBestActionSimulation(int state, int dealerCard) {
         List<Integer> hitPair = new ArrayList<>();
         hitPair.add(state);
@@ -154,6 +161,7 @@ public class monteCarloControl {
         }
     }
 
+    //used to gather the results of using the optimal policy
     public void runSimulation() {
         Random rand = new Random();
         int num_simulations = 500000;
@@ -261,6 +269,7 @@ public class monteCarloControl {
         return episode;
     }*/
 
+    //called by GUI at the end of a game to update Q based on its outcome
     public void determineReward(blackjack Blackjack) {
         int reward;
 

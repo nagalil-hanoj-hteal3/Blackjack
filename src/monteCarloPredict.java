@@ -146,6 +146,7 @@ public class monteCarloPredict {
     }
 
     private static Map<List<Integer>, double[]> updateQ(List<EpisodeStep> episode, Map<List<Integer>, double[]> returnsSum, Map<List<Integer>, Double> N, Map<List<Integer>, double[]> Q) {
+        //Loop through each step in the current episode (game)
         for (int i = 0; i < episode.size(); i++) {
             EpisodeStep step = episode.get(i);
             List<Integer> stateActionPair = new ArrayList<>();
@@ -153,6 +154,7 @@ public class monteCarloPredict {
             stateActionPair.add(step.dealerCard);
             stateActionPair.add(step.action);
 
+            // find the first occurence of a state/action pair
             int firstOccurrenceIdx = -1;
             for (int j = i; j >= 0; j--) {
                 if (episode.get(j).playerScore == step.playerScore && episode.get(j).dealerCard == step.dealerCard && episode.get(j).action == step.action) {
@@ -160,7 +162,8 @@ public class monteCarloPredict {
                     break;
                 }
             }
-
+            
+            //add discounted rewards
             double G = 0;
             for (int j = firstOccurrenceIdx; j < episode.size(); j++) {
                 double gammaPower = Math.pow(gamma, j - firstOccurrenceIdx);
@@ -171,9 +174,11 @@ public class monteCarloPredict {
             returnsSum.putIfAbsent(stateActionPair, new double[]{0.0});
             returnsSum.get(stateActionPair)[0] += G;
 
+            //amount of each state/action pair
             N.putIfAbsent(stateActionPair, 0.0);
             N.put(stateActionPair, N.get(stateActionPair) + 1);
 
+            //update Q value with the average of the returns and amount of each state/action pair
             Q.putIfAbsent(stateActionPair, new double[]{0.0});
             double[] qValues = Q.get(stateActionPair);
             //qValues[0] += (G - qValues[0]) / N.get(stateActionPair);
