@@ -25,7 +25,6 @@ public class GUI {
     private int choice = JOptionPane.NO_OPTION;
 
     private boolean playerHasStood = false;
-    private boolean isSimulating = false;
 
     // constructor
     public GUI(monteCarloControl control) {
@@ -146,24 +145,13 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 // Create a new thread for simulating and updating GUI
 
-                isSimulating = true;
-
                 new Thread(new Runnable() {
                     @Override
-                    public void run() {
-                        // Run Monte Carlo simulation
-                        // monteCarlo.runSimulation();
-                        
+                    public void run() {                        
                         int number = 0;
                         // Keep updating GUI until player busts or decides to stand
                         while (/*!Blackjack.isPlayerBust() && isSimulating*/number == 0) {
                             number++;
-                            // Pause for a short duration to simulate card reveal
-                            /*try {
-                                Thread.sleep(500); // Adjust the delay time as needed
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }*/
         
                             // Decide whether to hit or stand using Monte Carlo algorithm
                             if (control.getBestAction(Blackjack.getPlayerScore(), Blackjack.getDealerShownScore()) == 1) {
@@ -378,8 +366,12 @@ public class GUI {
         // Create a JLabel with the scaled card image
         JLabel cardLabel = new JLabel(scaledCardImage);
         
-        // Add the JLabel to the specified panel
-        panel.add(cardLabel);
+        // Add the JLabel to the beginning of the panel
+        panel.add(cardLabel, 0);
+        
+        // Repaint the panel to update changes
+        panel.revalidate();
+        panel.repaint();
     }     
 
     public void endGame() {
@@ -402,7 +394,6 @@ public class GUI {
         standButton.setEnabled(true);
         playerHasStood = false;
         updateResultLabel(null);
-        isSimulating = false;
         updateGUI();
     }
 

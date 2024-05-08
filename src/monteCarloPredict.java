@@ -89,6 +89,7 @@ public class monteCarloPredict {
 
         switch(policy) {
             case 0:
+                System.out.println("\n=====================================\n");
                 System.out.println("Basic policy results\n");
                 break;
             case 1:
@@ -110,23 +111,6 @@ public class monteCarloPredict {
         if (Blackjack.isPlayerWin()) { stats[0]++; } 
         else if (Blackjack.isGameDraw()){ stats[1]++; } 
         else if(Blackjack.isDealerWin()) { stats[2]++; }
-
-        // provide this to display all the games within each iteration of the simulation
-
-        // double playerWinPercentage = (double) stats[0] / NUM_SIMULATIONS * 100;
-        // double drawPercentage = (double) stats[1] / NUM_SIMULATIONS * 100;
-        // double playerLosePercentage = (double) stats[2] / NUM_SIMULATIONS * 100;
-
-        // playerWinPercentage = Math.round(playerWinPercentage * 10) / 10.0;
-        // drawPercentage = Math.round(drawPercentage * 10) / 10.0;
-        // playerLosePercentage = Math.round(playerLosePercentage * 10) / 10.0;
-
-        // System.out.println("\n=====================================\n");
-        // System.out.println("    Monte-Carlo Algorithm Results:   \n");
-        // System.out.println("Game #" + (i + 1));
-        // System.out.println("Player wins: " + stats[0] + " => " + playerWinPercentage + "%");
-        // System.out.println("Player losses: " + stats[2] + " => " + playerLosePercentage + "%");
-        // System.out.println("Draws: " + stats[1] + " => " + drawPercentage + "%");
     }
 
     private static void printFinalResults(int playerWins, int playerDraws, int playerLosses) {
